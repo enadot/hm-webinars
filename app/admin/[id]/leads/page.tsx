@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { ArrowLeft, Users, ExternalLink, Edit3 } from "lucide-react";
 import { LeadsTable, type LeadRow } from "./_leads-table";
+import { AdminFooter } from "../../_components/admin-footer";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "לידים | לוח ניהול" };
@@ -38,7 +39,7 @@ export default async function LeadsPage({
   const fileSafeSlug = campaign.slug.replace(/[^a-z0-9-]/gi, "-");
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <Link
@@ -68,7 +69,7 @@ export default async function LeadsPage({
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8 md:py-12">
+      <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold mb-1">לידים</h1>
@@ -88,6 +89,7 @@ export default async function LeadsPage({
 
         <LeadsTable allRows={rows} filenameBase={`leads-${fileSafeSlug}`} />
       </main>
+      <AdminFooter context={`/admin/${campaign.id}/leads`} />
     </div>
   );
 }
