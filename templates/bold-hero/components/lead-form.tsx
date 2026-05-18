@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Lock, Loader2, Sparkles } from "lucide-react";
 import { EditableText } from "@/components/editable/text";
 import { useEdit } from "@/lib/edit-context";
+import { useUtm } from "@/lib/use-utm";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 type Errors = Partial<Record<"name" | "phone" | "email" | "form", string>>;
@@ -25,6 +26,7 @@ export function BoldLeadForm({
 }) {
   const router = useRouter();
   const ctx = useEdit();
+  const utm = useUtm();
   const editing = !!ctx?.enabled;
   const { form } = config;
   const [name, setName] = useState("");
@@ -59,6 +61,7 @@ export function BoldLeadForm({
           phone: phone.trim(),
           email: email.trim().toLowerCase(),
           campaignSlug: slug,
+          ...utm.get(),
         }),
       });
       const data = await res.json().catch(() => ({}));

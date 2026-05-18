@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Rocket } from "lucide-react";
+import { useUtm } from "@/lib/use-utm";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 const PHONE_RE = /^0\d{8,9}$/;
@@ -21,6 +22,7 @@ export function EnergeticLeadForm({
   slug?: string;
 }) {
   const router = useRouter();
+  const utm = useUtm();
   const { form } = config;
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -52,6 +54,7 @@ export function EnergeticLeadForm({
           phone: phone.trim(),
           email: email.trim().toLowerCase(),
           campaignSlug: slug,
+          ...utm.get(),
         }),
       });
       const data = await res.json().catch(() => ({}));

@@ -32,6 +32,11 @@ model Lead {
   name        String
   phone       String
   email       String
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmContent  String?
+  utmTerm     String?
   userAgent   String?
   createdAt   DateTime @default(now())
 
