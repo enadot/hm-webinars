@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { getTemplate } from "@/lib/templates";
 import { ExternalLink, Edit3, Users, Plus, Eye, EyeOff } from "lucide-react";
 
+export const metadata = { title: "לוח ניהול וובינרים" };
+
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
@@ -69,10 +71,13 @@ export default async function AdminDashboard() {
                       <span>·</span>
                       <span>{t?.name ?? c.templateId}</span>
                       <span>·</span>
-                      <span className="inline-flex items-center gap-1">
+                      <Link
+                        href={`/admin/${c.id}/leads`}
+                        className="inline-flex items-center gap-1 font-bold text-brand-primary hover:underline"
+                      >
                         <Users className="size-3.5" />
                         {c._count.leads} לידים
-                      </span>
+                      </Link>
                     </div>
                   </div>
 
@@ -84,6 +89,13 @@ export default async function AdminDashboard() {
                     >
                       <ExternalLink className="size-4" />
                       צפייה
+                    </Link>
+                    <Link
+                      href={`/admin/${c.id}/leads`}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold border border-slate-200 rounded-lg hover:bg-slate-50"
+                    >
+                      <Users className="size-4" />
+                      לידים
                     </Link>
                     <Link
                       href={`/admin/${c.id}/edit`}
