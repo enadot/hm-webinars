@@ -1,13 +1,50 @@
-import { ShieldCheck } from "lucide-react";
+"use client";
+
+import { ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { EditableText } from "@/components/editable/text";
 import { EditableImage } from "@/components/editable/image";
+import { EditableSection } from "@/components/editable/section";
+import { useEdit } from "@/lib/edit-context";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 type Commitments = NonNullable<CampaignConfig["commitments"]>;
 
 export function BoldCommitments({ commitments }: { commitments: Commitments }) {
+  const ctx = useEdit();
+  const editing = !!ctx?.enabled;
+  const enabled = commitments.enabled !== false;
+
+  // Public page: render only when the section is turned on.
+  if (!editing && !enabled) return null;
+
   return (
-    <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-white to-slate-50">
+    <EditableSection
+      sectionKey="commitments"
+      className={`py-20 md:py-28 lg:py-32 bg-gradient-to-b from-white to-slate-50 ${
+        editing && !enabled ? "opacity-50" : ""
+      }`}
+    >
+      {editing && (
+        <button
+          type="button"
+          onClick={() => ctx?.update("commitments.enabled", !enabled)}
+          title={enabled ? "הסתרת הסקציה מהדף הציבורי" : "הצגת הסקציה בדף הציבורי"}
+          className="absolute top-3 right-3 z-30 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold shadow-lg ring-1 ring-black/10"
+        >
+          {enabled ? (
+            <>
+              <EyeOff className="size-4 text-slate-600" />
+              <span className="text-slate-700">מוצג בדף — לחצו להסתרה</span>
+            </>
+          ) : (
+            <>
+              <Eye className="size-4 text-brand-primary" />
+              <span className="text-brand-primary">מוסתר מהדף — לחצו להצגה</span>
+            </>
+          )}
+        </button>
+      )}
+
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 text-sm md:text-base font-bold text-brand-primary bg-brand-primary/10 border border-brand-primary/20 px-5 py-2 rounded-full mb-6 uppercase tracking-wider">
@@ -46,6 +83,6 @@ export function BoldCommitments({ commitments }: { commitments: Commitments }) {
           />
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }

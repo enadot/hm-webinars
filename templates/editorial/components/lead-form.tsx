@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Lock } from "lucide-react";
 import { useUtm } from "@/lib/use-utm";
+import { EditableSection } from "@/components/editable/section";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 const PHONE_RE = /^0\d{8,9}$/;
@@ -71,7 +72,8 @@ export function EditorialLeadForm({
   }
 
   return (
-    <section
+    <EditableSection
+      sectionKey="form"
       id="register"
       className="py-20 md:py-28"
       style={{ backgroundColor: config.theme.primary }}
@@ -149,6 +151,6 @@ export function EditorialLeadForm({
           </form>
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }

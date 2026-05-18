@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Lock, Loader2, Sparkles } from "lucide-react";
 import { EditableText } from "@/components/editable/text";
+import { EditableSection } from "@/components/editable/section";
 import { useEdit } from "@/lib/edit-context";
 import { useUtm } from "@/lib/use-utm";
 import type { CampaignConfig } from "@/lib/campaign-schema";
@@ -80,7 +81,8 @@ export function BoldLeadForm({
   }
 
   return (
-    <section
+    <EditableSection
+      sectionKey="form"
       id="register"
       className="relative py-20 md:py-28 lg:py-32 bg-mesh-hero text-white overflow-hidden"
     >
@@ -248,6 +250,6 @@ export function BoldLeadForm({
           </div>
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }

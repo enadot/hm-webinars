@@ -22,6 +22,12 @@ export const BulletSchema = z.object({
 });
 export type Bullet = z.infer<typeof BulletSchema>;
 
+export const StyleOverrideSchema = z.object({
+  color: z.string().optional(),
+  backgroundColor: z.string().optional(),
+});
+export type StyleOverride = z.infer<typeof StyleOverrideSchema>;
+
 export const ThemeSchema = z.object({
   primary: z.string().default("#0B1437"),
   primary2: z.string().default("#1B2762"),
@@ -111,6 +117,9 @@ export const CampaignConfigSchema = z.object({
     legal: z.string().default(""),
   }),
   theme: ThemeSchema.default(() => ThemeSchema.parse({})),
+  // Per-element / per-section color overrides, keyed by element path
+  // ("hero.headline") or section key ("section:hero").
+  styleOverrides: z.record(z.string(), StyleOverrideSchema).default({}),
 });
 
 export type CampaignConfig = z.infer<typeof CampaignConfigSchema>;

@@ -8,9 +8,21 @@ import {
   type KeyboardEvent,
   type ClipboardEvent,
 } from "react";
-import { useEdit } from "@/lib/edit-context";
+import { useEdit, useStyleOverride } from "@/lib/edit-context";
 import { getByPath } from "@/lib/path-utils";
 import { cn } from "@/lib/utils";
+import type { StyleOverride } from "@/lib/campaign-schema";
+import { ColorPopover } from "./color-popover";
+
+const INLINE_TAGS = new Set(["span", "a", "em", "strong", "b", "i", "small"]);
+
+function styleFrom(o: StyleOverride | undefined) {
+  if (!o) return undefined;
+  return {
+    color: o.color || undefined,
+    backgroundColor: o.backgroundColor || undefined,
+  };
+}
 
 type EditableTextProps = {
   path: string;
@@ -31,6 +43,8 @@ export function EditableText({
 }: EditableTextProps) {
   const ctx = useEdit();
   const value = (getByPath<string>(ctx?.config, path) ?? "") as string;
+  const [override, setOverride] = useStyleOverride(path);
+  const styleOverride = styleFrom(override);
   const ref = useRef<HTMLElement>(null);
   const focusedRef = useRef(false);
 
@@ -61,7 +75,7 @@ export function EditableText({
     if (multiline) {
       const lines = value.split("\n");
       return (
-        <Tag className={className}>
+        <Tag className={className} style={styleOverride}>
           {lines.map((l, i) => (
             <span key={i}>
               {l}
@@ -71,20 +85,41 @@ export function EditableText({
         </Tag>
       );
     }
-    return <Tag className={className}>{value}</Tag>;
+    return (
+      <Tag className={className} style={styleOverride}>
+        {value}
+      </Tag>
+    );
   }
 
   // Edit mode
+  const tagName = typeof Tag === "string" ? Tag : "span";
+  const isInline = INLINE_TAGS.has(tagName);
+  const Wrapper = (isInline ? "span" : "div") as ElementType;
+
   return (
-    <Tag
-      ref={ref}
-      className={cn(
-        className,
-        "outline-2 outline-dashed outline-transparent hover:outline-brand-gold/70 focus:outline-brand-gold focus:outline-solid -outline-offset-2 rounded cursor-text transition-[outline-color]",
-        !value &&
-          "min-w-[3ch] min-h-[1em] before:content-[attr(data-placeholder)] before:text-current before:opacity-40 empty:before:inline"
-      )}
-      contentEditable
+    <Wrapper
+      className="relative group"
+      style={{
+        display: isInline ? "inline-block" : "block",
+        ...(isInline ? { verticalAlign: "top" } : {}),
+      }}
+    >
+      <ColorPopover
+        className="-top-3 -left-3"
+        value={override}
+        onChange={setOverride}
+      />
+      <Tag
+        ref={ref}
+        style={styleOverride}
+        className={cn(
+          className,
+          "outline-2 outline-dashed outline-transparent hover:outline-brand-gold/70 focus:outline-brand-gold focus:outline-solid -outline-offset-2 rounded cursor-text transition-[outline-color]",
+          !value &&
+            "min-w-[3ch] min-h-[1em] before:content-[attr(data-placeholder)] before:text-current before:opacity-40 empty:before:inline"
+        )}
+        contentEditable
       suppressContentEditableWarning
       data-placeholder={placeholder || "..."}
       onFocus={() => {
@@ -123,7 +158,8 @@ export function EditableText({
         selection.removeAllRanges();
         selection.addRange(range);
       }}
-    />
+      />
+    </Wrapper>
   );
 }
 

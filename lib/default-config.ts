@@ -38,6 +38,7 @@ export function defaultCampaignConfig(): CampaignConfig {
       buttonText: "הבטיחו לי מקום עכשיו ←",
     },
     footer: { phone: "", email: "", legal: "" },
+    styleOverrides: {},
     theme: {
       primary: "#0B1437",
       primary2: "#1B2762",

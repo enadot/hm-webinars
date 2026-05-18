@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Rocket } from "lucide-react";
 import { useUtm } from "@/lib/use-utm";
+import { EditableSection } from "@/components/editable/section";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 const PHONE_RE = /^0\d{8,9}$/;
@@ -71,7 +72,7 @@ export function EnergeticLeadForm({
   }
 
   return (
-    <section id="register" className="py-20 md:py-28 bg-yellow-300">
+    <EditableSection sectionKey="form" id="register" className="py-20 md:py-28 bg-yellow-300">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
@@ -141,6 +142,6 @@ export function EnergeticLeadForm({
           </div>
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }

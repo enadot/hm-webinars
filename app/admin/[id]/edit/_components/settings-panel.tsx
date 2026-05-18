@@ -152,19 +152,6 @@ export function SettingsPanel({ draft, onConfig, onPatch }: Props) {
         <ColorField label="סגול" value={draft.config.theme.purple} onChange={(v) => onConfig("theme.purple", v)} />
       </Section>
 
-      <Section title="המחויבות (10 הדברות)" icon={<Type className="size-4" />}>
-        <div className="flex items-center justify-between mb-2">
-          <Label className="text-xs font-bold">הצג סקציה</Label>
-          <Toggle
-            checked={!!draft.config.commitments?.enabled}
-            onChange={(v) => onConfig("commitments.enabled", v)}
-          />
-        </div>
-        <p className="text-[11px] text-slate-500">
-          לעריכת התוכן והתמונה - לחצו ישירות על הסקציה בדף.
-        </p>
-      </Section>
-
       <Section title="כתובת URL" icon={<Globe className="size-4" />}>
         <CompactField label="שם פנימי">
           <CompactInput value={draft.name} onChange={(v) => onPatch("name", v)} />

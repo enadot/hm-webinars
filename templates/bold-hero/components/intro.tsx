@@ -1,12 +1,13 @@
 import { ShieldCheck, Lightbulb, TrendingUp } from "lucide-react";
 import { EditableText } from "@/components/editable/text";
+import { EditableSection } from "@/components/editable/section";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 type Intro = NonNullable<CampaignConfig["intro"]>;
 
 export function BoldIntro({ intro }: { intro: Intro }) {
   return (
-    <section className="relative py-20 md:py-28 lg:py-32 bg-white overflow-hidden">
+    <EditableSection sectionKey="intro" className="relative py-20 md:py-28 lg:py-32 bg-white overflow-hidden">
       <div className="absolute -top-20 -right-20 w-96 h-96 bg-brand-gold/5 rounded-full blur-3xl" />
       <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-brand-purple/5 rounded-full blur-3xl" />
 
@@ -55,7 +56,7 @@ export function BoldIntro({ intro }: { intro: Intro }) {
           )}
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }
 

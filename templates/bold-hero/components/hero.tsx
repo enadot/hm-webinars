@@ -3,13 +3,14 @@ import { Calendar, Clock, Video, Users } from "lucide-react";
 import { Countdown } from "./countdown";
 import { EditableText } from "@/components/editable/text";
 import { EditableImage } from "@/components/editable/image";
+import { EditableSection } from "@/components/editable/section";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 export function BoldHero({ config }: { config: CampaignConfig }) {
   const { hero, webinar, brand } = config;
 
   return (
-    <section className="relative overflow-hidden bg-mesh-hero text-white isolate">
+    <EditableSection sectionKey="hero" className="relative overflow-hidden bg-mesh-hero text-white isolate">
       <div className="absolute -top-32 -right-32 w-[40rem] h-[40rem] bg-brand-purple/30 rounded-full blur-3xl animate-blob" />
       <div className="absolute -bottom-40 -left-32 w-[40rem] h-[40rem] bg-brand-gold/20 rounded-full blur-3xl animate-blob-slow" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-[50rem] h-[50rem] bg-brand-coral/10 rounded-full blur-3xl" />
@@ -126,7 +127,7 @@ export function BoldHero({ config }: { config: CampaignConfig }) {
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white/5 to-transparent pointer-events-none" />
-    </section>
+    </EditableSection>
   );
 }
 

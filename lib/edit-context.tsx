@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import type { CampaignConfig } from "@/lib/campaign-schema";
+import type { CampaignConfig, StyleOverride } from "@/lib/campaign-schema";
 import { getByPath } from "@/lib/path-utils";
 
 export type EditCtxValue = {
@@ -20,6 +20,25 @@ export function useEditValue<T = unknown>(path: string, fallback?: T): T | undef
   const ctx = useContext(EditContext);
   if (!ctx) return fallback;
   return (getByPath<T>(ctx.config, path) ?? fallback) as T | undefined;
+}
+
+// Style overrides are stored as a flat record keyed by a string that itself
+// contains dots (e.g. "speakers.list.0.name"), so we must replace the whole
+// map rather than use the dot-path update helper.
+export function useStyleOverride(
+  key: string
+): [StyleOverride | undefined, (next: StyleOverride) => void] {
+  const ctx = useContext(EditContext);
+  const map = (ctx?.config.styleOverrides ?? {}) as Record<string, StyleOverride>;
+  const current = map[key];
+  const set = (next: StyleOverride) => {
+    if (!ctx) return;
+    const nextMap = { ...map };
+    if (!next || (!next.color && !next.backgroundColor)) delete nextMap[key];
+    else nextMap[key] = next;
+    ctx.update("styleOverrides", nextMap);
+  };
+  return [current, set];
 }
 
 export function useEditList<T = unknown>(listPath: string) {

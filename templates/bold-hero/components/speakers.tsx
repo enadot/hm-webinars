@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Award } from "lucide-react";
 import { EditableText } from "@/components/editable/text";
 import { EditableImage } from "@/components/editable/image";
+import { EditableSection } from "@/components/editable/section";
 import {
   EditableItemControls,
   EditableItemWrapper,
@@ -23,7 +24,7 @@ export function BoldSpeakers({ config }: { config: CampaignConfig }) {
   const { speakers } = config;
 
   return (
-    <section className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-slate-50 to-white">
+    <EditableSection sectionKey="speakers" className="py-20 md:py-28 lg:py-32 bg-gradient-to-b from-slate-50 to-white">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
           <div className="inline-flex items-center gap-2 text-sm md:text-base font-bold text-brand-purple bg-brand-purple/10 border border-brand-purple/20 px-5 py-2 rounded-full mb-6 uppercase tracking-wider">
@@ -72,7 +73,7 @@ export function BoldSpeakers({ config }: { config: CampaignConfig }) {
           </div>
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }
 

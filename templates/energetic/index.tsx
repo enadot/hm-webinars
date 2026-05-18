@@ -2,6 +2,7 @@ import type { CampaignConfig } from "@/lib/campaign-schema";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/templates/bold-hero/components/countdown";
 import { Zap, Rocket, Star, Calendar, Clock, Video } from "lucide-react";
+import { EditableSection } from "@/components/editable/section";
 import { EnergeticLeadForm } from "./components/lead-form";
 
 export function EnergeticTemplate({
@@ -16,7 +17,7 @@ export function EnergeticTemplate({
   return (
     <main className="min-h-screen bg-white text-zinc-900 overflow-x-hidden">
       {/* Hero - big color block */}
-      <section className="relative bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400 text-white overflow-hidden">
+      <EditableSection sectionKey="hero" className="relative bg-gradient-to-br from-fuchsia-500 via-pink-500 to-amber-400 text-white overflow-hidden">
         <div className="absolute top-10 right-10 w-72 h-72 bg-yellow-300 rounded-full blur-3xl opacity-50 animate-blob" />
         <div className="absolute bottom-10 left-10 w-72 h-72 bg-cyan-300 rounded-full blur-3xl opacity-50 animate-blob-slow" />
 
@@ -75,11 +76,11 @@ export function EnergeticTemplate({
             </a>
           </div>
         </div>
-      </section>
+      </EditableSection>
 
       {/* Intro */}
       {intro && (
-        <section className="py-20 md:py-28 bg-yellow-50">
+        <EditableSection sectionKey="intro" className="py-20 md:py-28 bg-yellow-50">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-8 leading-[1.05]">
               {intro.title}{" "}
@@ -91,11 +92,11 @@ export function EnergeticTemplate({
             </h2>
             <p className="text-xl md:text-2xl text-zinc-700 leading-relaxed">{intro.body}</p>
           </div>
-        </section>
+        </EditableSection>
       )}
 
       {/* Speakers */}
-      <section className="py-20 md:py-28 bg-white">
+      <EditableSection sectionKey="speakers" className="py-20 md:py-28 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05] mb-4">
@@ -127,10 +128,10 @@ export function EnergeticTemplate({
             ))}
           </div>
         </div>
-      </section>
+      </EditableSection>
 
       {/* Bullets - cards on color */}
-      <section className="py-20 md:py-28 bg-fuchsia-500 text-white">
+      <EditableSection sectionKey="bullets" className="py-20 md:py-28 bg-fuchsia-500 text-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <div className="inline-block bg-black text-yellow-300 px-4 py-1.5 rounded-full font-extrabold mb-4">
@@ -159,11 +160,11 @@ export function EnergeticTemplate({
             ))}
           </div>
         </div>
-      </section>
+      </EditableSection>
 
       <EnergeticLeadForm config={config} slug={slug} />
 
-      <footer className="bg-black text-zinc-400 py-12">
+      <EditableSection as="footer" sectionKey="footer" className="bg-black text-zinc-400 py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="text-2xl font-extrabold text-yellow-300 mb-2">{brand.name}</div>
           {brand.tagline && <p className="text-sm">{brand.tagline}</p>}
@@ -171,7 +172,7 @@ export function EnergeticTemplate({
             <p className="mt-6 text-xs text-zinc-500 max-w-2xl mx-auto">{config.footer.legal}</p>
           )}
         </div>
-      </footer>
+      </EditableSection>
     </main>
   );
 }

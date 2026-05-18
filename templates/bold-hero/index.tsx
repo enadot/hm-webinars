@@ -14,9 +14,7 @@ export function BoldHeroTemplate({ config, slug }: { config: CampaignConfig; slu
       {config.intro && <BoldIntro intro={config.intro} />}
       <BoldSpeakers config={config} />
       <BoldBullets config={config} />
-      {config.commitments?.enabled && config.commitments.imageUrl && (
-        <BoldCommitments commitments={config.commitments} />
-      )}
+      {config.commitments && <BoldCommitments commitments={config.commitments} />}
       <BoldLeadForm config={config} slug={slug} />
       <BoldFooter config={config} />
     </main>

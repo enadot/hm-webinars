@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import * as Icons from "lucide-react";
 import { EditableText } from "@/components/editable/text";
+import { EditableSection } from "@/components/editable/section";
 import {
   EditableItemControls,
   EditableItemWrapper,
@@ -27,7 +28,7 @@ export function BoldBullets({ config }: { config: CampaignConfig }) {
   const { bullets } = config;
 
   return (
-    <section className="relative py-20 md:py-28 lg:py-32 bg-brand-dark text-white overflow-hidden">
+    <EditableSection sectionKey="bullets" className="relative py-20 md:py-28 lg:py-32 bg-brand-dark text-white overflow-hidden">
       <div className="absolute top-0 right-0 w-[40rem] h-[40rem] bg-brand-purple/20 rounded-full blur-3xl" />
       <div className="absolute bottom-0 left-0 w-[40rem] h-[40rem] bg-brand-gold/15 rounded-full blur-3xl" />
       <div className="absolute inset-0 bg-grid opacity-20" />
@@ -72,7 +73,7 @@ export function BoldBullets({ config }: { config: CampaignConfig }) {
           </div>
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }
 

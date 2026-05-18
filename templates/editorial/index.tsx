@@ -2,6 +2,7 @@ import type { CampaignConfig } from "@/lib/campaign-schema";
 import { Calendar, Clock, Video, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/templates/bold-hero/components/countdown";
+import { EditableSection } from "@/components/editable/section";
 import { EditorialLeadForm } from "./components/lead-form";
 
 export function EditorialTemplate({
@@ -33,7 +34,7 @@ export function EditorialTemplate({
       )}
 
       {/* Hero - editorial style */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
+      <EditableSection sectionKey="hero" className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
             <div className="text-sm md:text-base font-bold text-stone-500 tracking-[0.2em] uppercase mb-6">
@@ -99,14 +100,14 @@ export function EditorialTemplate({
             </div>
           </div>
         </div>
-      </section>
+      </EditableSection>
 
       {/* Divider */}
       <div className="border-t border-stone-200" />
 
       {/* Intro */}
       {intro && (
-        <section className="py-20 md:py-28 bg-white">
+        <EditableSection sectionKey="intro" className="py-20 md:py-28 bg-white">
           <div className="container mx-auto px-4 max-w-4xl text-center">
             {intro.eyebrow && (
               <div className="text-sm font-bold text-stone-500 tracking-[0.2em] uppercase mb-6">
@@ -123,11 +124,11 @@ export function EditorialTemplate({
             </h2>
             <p className="text-xl md:text-2xl text-stone-700 leading-[1.6]">{intro.body}</p>
           </div>
-        </section>
+        </EditableSection>
       )}
 
       {/* Speakers - full bio */}
-      <section className="py-20 md:py-28 bg-stone-50">
+      <EditableSection sectionKey="speakers" className="py-20 md:py-28 bg-stone-50">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <div className="text-sm font-bold text-stone-500 tracking-[0.2em] uppercase mb-4">
@@ -185,10 +186,10 @@ export function EditorialTemplate({
             ))}
           </div>
         </div>
-      </section>
+      </EditableSection>
 
       {/* Bullets */}
-      <section className="py-20 md:py-28 bg-white">
+      <EditableSection sectionKey="bullets" className="py-20 md:py-28 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <div className="text-sm font-bold text-stone-500 tracking-[0.2em] uppercase mb-4">
@@ -218,11 +219,11 @@ export function EditorialTemplate({
             ))}
           </div>
         </div>
-      </section>
+      </EditableSection>
 
       <EditorialLeadForm config={config} slug={slug} />
 
-      <footer className="bg-stone-900 text-stone-300 py-12">
+      <EditableSection as="footer" sectionKey="footer" className="bg-stone-900 text-stone-300 py-12">
         <div className="container mx-auto px-4 text-center">
           <div className="font-serif text-2xl font-bold text-white mb-2">{brand.name}</div>
           {brand.tagline && <p className="text-stone-400">{brand.tagline}</p>}
@@ -230,7 +231,7 @@ export function EditorialTemplate({
             <p className="mt-8 text-xs text-stone-500 max-w-2xl mx-auto">{config.footer.legal}</p>
           )}
         </div>
-      </footer>
+      </EditableSection>
     </main>
   );
 }
