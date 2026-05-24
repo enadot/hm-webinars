@@ -68,10 +68,9 @@ export function EditableText({
 
   // Read-only mode
   if (!ctx?.enabled) {
-    if (!value) {
-      if (hideIfEmpty) return null;
-      return placeholder ? <Tag className={className}>{placeholder}</Tag> : null;
-    }
+    // Never leak the editor placeholder ("כותרת" / "תיאור" / ...) into the
+    // public page. Empty value → render nothing.
+    if (!value) return null;
     if (multiline) {
       const lines = value.split("\n");
       return (
