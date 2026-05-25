@@ -22,6 +22,13 @@ export const BulletSchema = z.object({
 });
 export type Bullet = z.infer<typeof BulletSchema>;
 
+export const BannerSchema = z.object({
+  imageUrl: z.string().default(""),
+  linkUrl: z.string().default(""),
+  alt: z.string().default(""),
+});
+export type Banner = z.infer<typeof BannerSchema>;
+
 export const StyleOverrideSchema = z.object({
   color: z.string().optional(),
   backgroundColor: z.string().optional(),
@@ -117,6 +124,8 @@ export const CampaignConfigSchema = z.object({
     legal: z.string().default(""),
   }),
   theme: ThemeSchema.default(() => ThemeSchema.parse({})),
+  // Optional sponsor / promo banner shown before the lead form.
+  banner: BannerSchema.default(() => BannerSchema.parse({})),
   // Per-element / per-section color overrides, keyed by element path
   // ("hero.headline") or section key ("section:hero").
   styleOverrides: z.record(z.string(), StyleOverrideSchema).default({}),

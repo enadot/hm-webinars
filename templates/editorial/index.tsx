@@ -3,6 +3,7 @@ import { Calendar, Clock, Video, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Countdown } from "@/templates/bold-hero/components/countdown";
 import { EditableSection } from "@/components/editable/section";
+import { EditableBanner } from "@/components/editable/banner";
 import { EditorialLeadForm } from "./components/lead-form";
 
 export function EditorialTemplate({
@@ -220,6 +221,8 @@ export function EditorialTemplate({
           </div>
         </div>
       </EditableSection>
+
+      <EditableBanner />
 
       <EditorialLeadForm config={config} slug={slug} />
 

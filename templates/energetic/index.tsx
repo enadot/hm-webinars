@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Countdown } from "@/templates/bold-hero/components/countdown";
 import { Zap, Rocket, Star, Calendar, Clock, Video } from "lucide-react";
 import { EditableSection } from "@/components/editable/section";
+import { EditableBanner } from "@/components/editable/banner";
 import { EnergeticLeadForm } from "./components/lead-form";
 
 export function EnergeticTemplate({
@@ -161,6 +162,8 @@ export function EnergeticTemplate({
           </div>
         </div>
       </EditableSection>
+
+      <EditableBanner />
 
       <EnergeticLeadForm config={config} slug={slug} />
 

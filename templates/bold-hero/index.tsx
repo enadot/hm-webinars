@@ -6,6 +6,7 @@ import { BoldBullets } from "./components/bullets";
 import { BoldCommitments } from "./components/commitments";
 import { BoldLeadForm } from "./components/lead-form";
 import { BoldFooter } from "./components/footer";
+import { EditableBanner } from "@/components/editable/banner";
 
 export function BoldHeroTemplate({ config, slug }: { config: CampaignConfig; slug?: string }) {
   return (
@@ -15,6 +16,7 @@ export function BoldHeroTemplate({ config, slug }: { config: CampaignConfig; slu
       <BoldSpeakers config={config} />
       <BoldBullets config={config} />
       {config.commitments && <BoldCommitments commitments={config.commitments} />}
+      <EditableBanner />
       <BoldLeadForm config={config} slug={slug} />
       <BoldFooter config={config} />
     </main>
