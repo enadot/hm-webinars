@@ -79,6 +79,8 @@ export function EnergeticTemplate({
         </div>
       </EditableSection>
 
+      <EnergeticLeadForm config={config} slug={slug} placement="top" />
+
       {/* Intro */}
       {intro && (
         <EditableSection sectionKey="intro" className="py-20 md:py-28 bg-yellow-50">

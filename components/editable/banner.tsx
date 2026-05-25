@@ -1,6 +1,7 @@
 "use client";
 
 import { EditableImage } from "./image";
+import { EditableSection } from "./section";
 import { useEdit } from "@/lib/edit-context";
 
 /**
@@ -34,10 +35,8 @@ export function EditableBanner() {
   );
 
   return (
-    <section
-      aria-label="באנר פרסומי"
-      className="py-8 md:py-12 bg-transparent"
-    >
+    <EditableSection sectionKey="banner" className="py-8 md:py-12">
+
       <div className="container mx-auto px-4">
         <div className="max-w-[970px] mx-auto">
           {editing ? (
@@ -73,6 +72,6 @@ export function EditableBanner() {
           )}
         </div>
       </div>
-    </section>
+    </EditableSection>
   );
 }

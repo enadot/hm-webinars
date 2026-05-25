@@ -20,6 +20,7 @@ export function BoldCommitments({ commitments }: { commitments: Commitments }) {
   return (
     <EditableSection
       sectionKey="commitments"
+      hideVisibilityToggle
       className={`py-20 md:py-28 lg:py-32 bg-gradient-to-b from-white to-slate-50 ${
         editing && !enabled ? "opacity-50" : ""
       }`}

@@ -12,6 +12,7 @@ export function BoldHeroTemplate({ config, slug }: { config: CampaignConfig; slu
   return (
     <main className="min-h-screen bg-white">
       <BoldHero config={config} />
+      <BoldLeadForm config={config} slug={slug} placement="top" />
       {config.intro && <BoldIntro intro={config.intro} />}
       <BoldSpeakers config={config} />
       <BoldBullets config={config} />

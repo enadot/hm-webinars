@@ -18,10 +18,15 @@ type Errors = Partial<Record<"name" | "phone" | "email" | "form", string>>;
 export function EditorialLeadForm({
   config,
   slug,
+  placement = "bottom",
 }: {
   config: CampaignConfig;
   slug?: string;
+  placement?: "top" | "bottom";
 }) {
+  const idp = placement === "top" ? "top-" : "";
+  const sectionId = placement === "top" ? "register-top" : "register";
+  const sectionKey = placement === "top" ? "form-top" : "form";
   const router = useRouter();
   const utm = useUtm();
   const { form } = config;
@@ -73,8 +78,8 @@ export function EditorialLeadForm({
 
   return (
     <EditableSection
-      sectionKey="form"
-      id="register"
+      sectionKey={sectionKey}
+      id={sectionId}
       className="py-20 md:py-28"
       style={{ backgroundColor: config.theme.primary }}
     >
@@ -97,9 +102,9 @@ export function EditorialLeadForm({
 
           <form onSubmit={handleSubmit} noValidate className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name-e" className="text-base font-bold">שם מלא</Label>
+              <Label htmlFor={`${idp}name-e`} className="text-base font-bold">שם מלא</Label>
               <Input
-                id="name-e"
+                id={`${idp}name-e`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 aria-invalid={!!errors.name}
@@ -107,9 +112,9 @@ export function EditorialLeadForm({
               {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone-e" className="text-base font-bold">טלפון</Label>
+              <Label htmlFor={`${idp}phone-e`} className="text-base font-bold">טלפון</Label>
               <Input
-                id="phone-e"
+                id={`${idp}phone-e`}
                 type="tel"
                 dir="ltr"
                 value={phone}
@@ -119,9 +124,9 @@ export function EditorialLeadForm({
               {errors.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email-e" className="text-base font-bold">מייל</Label>
+              <Label htmlFor={`${idp}email-e`} className="text-base font-bold">מייל</Label>
               <Input
-                id="email-e"
+                id={`${idp}email-e`}
                 type="email"
                 dir="ltr"
                 value={email}

@@ -21,10 +21,15 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function BoldLeadForm({
   config,
   slug,
+  placement = "bottom",
 }: {
   config: CampaignConfig;
   slug?: string;
+  placement?: "top" | "bottom";
 }) {
+  const idp = placement === "top" ? "top-" : "";
+  const sectionId = placement === "top" ? "register-top" : "register";
+  const sectionKey = placement === "top" ? "form-top" : "form";
   const router = useRouter();
   const ctx = useEdit();
   const utm = useUtm();
@@ -82,8 +87,8 @@ export function BoldLeadForm({
 
   return (
     <EditableSection
-      sectionKey="form"
-      id="register"
+      sectionKey={sectionKey}
+      id={sectionId}
       className="relative py-20 md:py-28 lg:py-32 bg-mesh-hero text-white overflow-hidden"
     >
       <div className="absolute -top-40 -right-40 w-[40rem] h-[40rem] bg-brand-gold/25 rounded-full blur-3xl animate-blob" />
@@ -154,11 +159,11 @@ export function BoldLeadForm({
 
                 <form onSubmit={handleSubmit} noValidate className="space-y-6">
                   <div className="space-y-2.5">
-                    <Label htmlFor="name" className="text-base md:text-lg font-bold text-brand-dark">
+                    <Label htmlFor={`${idp}name`} className="text-base md:text-lg font-bold text-brand-dark">
                       שם מלא
                     </Label>
                     <Input
-                      id="name"
+                      id={`${idp}name`}
                       name="name"
                       autoComplete="name"
                       value={name}
@@ -172,11 +177,11 @@ export function BoldLeadForm({
                   </div>
 
                   <div className="space-y-2.5">
-                    <Label htmlFor="phone" className="text-base md:text-lg font-bold text-brand-dark">
+                    <Label htmlFor={`${idp}phone`} className="text-base md:text-lg font-bold text-brand-dark">
                       טלפון
                     </Label>
                     <Input
-                      id="phone"
+                      id={`${idp}phone`}
                       name="phone"
                       type="tel"
                       dir="ltr"
@@ -193,11 +198,11 @@ export function BoldLeadForm({
                   </div>
 
                   <div className="space-y-2.5">
-                    <Label htmlFor="email" className="text-base md:text-lg font-bold text-brand-dark">
+                    <Label htmlFor={`${idp}email`} className="text-base md:text-lg font-bold text-brand-dark">
                       מייל
                     </Label>
                     <Input
-                      id="email"
+                      id={`${idp}email`}
                       name="email"
                       type="email"
                       dir="ltr"

@@ -103,6 +103,8 @@ export function EditorialTemplate({
         </div>
       </EditableSection>
 
+      <EditorialLeadForm config={config} slug={slug} placement="top" />
+
       {/* Divider */}
       <div className="border-t border-stone-200" />
 

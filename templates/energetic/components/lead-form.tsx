@@ -18,10 +18,15 @@ type Errors = Partial<Record<"name" | "phone" | "email" | "form", string>>;
 export function EnergeticLeadForm({
   config,
   slug,
+  placement = "bottom",
 }: {
   config: CampaignConfig;
   slug?: string;
+  placement?: "top" | "bottom";
 }) {
+  const idp = placement === "top" ? "top-" : "";
+  const sectionId = placement === "top" ? "register-top" : "register";
+  const sectionKey = placement === "top" ? "form-top" : "form";
   const router = useRouter();
   const utm = useUtm();
   const { form } = config;
@@ -72,7 +77,7 @@ export function EnergeticLeadForm({
   }
 
   return (
-    <EditableSection sectionKey="form" id="register" className="py-20 md:py-28 bg-yellow-300">
+    <EditableSection sectionKey={sectionKey} id={sectionId} className="py-20 md:py-28 bg-yellow-300">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
@@ -92,9 +97,9 @@ export function EnergeticLeadForm({
           <div className="bg-white border-4 border-black rounded-3xl p-8 md:p-10 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="name-en" className="text-base font-extrabold">שם מלא</Label>
+                <Label htmlFor={`${idp}name-en`} className="text-base font-extrabold">שם מלא</Label>
                 <Input
-                  id="name-en"
+                  id={`${idp}name-en`}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   aria-invalid={!!errors.name}
@@ -102,9 +107,9 @@ export function EnergeticLeadForm({
                 {errors.name && <p className="text-sm text-destructive font-bold">{errors.name}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone-en" className="text-base font-extrabold">טלפון</Label>
+                <Label htmlFor={`${idp}phone-en`} className="text-base font-extrabold">טלפון</Label>
                 <Input
-                  id="phone-en"
+                  id={`${idp}phone-en`}
                   type="tel"
                   dir="ltr"
                   value={phone}
@@ -114,9 +119,9 @@ export function EnergeticLeadForm({
                 {errors.phone && <p className="text-sm text-destructive font-bold">{errors.phone}</p>}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email-en" className="text-base font-extrabold">מייל</Label>
+                <Label htmlFor={`${idp}email-en`} className="text-base font-extrabold">מייל</Label>
                 <Input
-                  id="email-en"
+                  id={`${idp}email-en`}
                   type="email"
                   dir="ltr"
                   value={email}

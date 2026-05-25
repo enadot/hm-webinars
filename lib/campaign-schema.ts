@@ -32,6 +32,7 @@ export type Banner = z.infer<typeof BannerSchema>;
 export const StyleOverrideSchema = z.object({
   color: z.string().optional(),
   backgroundColor: z.string().optional(),
+  hidden: z.boolean().optional(),
 });
 export type StyleOverride = z.infer<typeof StyleOverrideSchema>;
 

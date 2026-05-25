@@ -34,7 +34,8 @@ export function useStyleOverride(
   const set = (next: StyleOverride) => {
     if (!ctx) return;
     const nextMap = { ...map };
-    if (!next || (!next.color && !next.backgroundColor)) delete nextMap[key];
+    if (!next || (!next.color && !next.backgroundColor && !next.hidden))
+      delete nextMap[key];
     else nextMap[key] = next;
     ctx.update("styleOverrides", nextMap);
   };
