@@ -11,6 +11,7 @@ import { EditableText } from "@/components/editable/text";
 import { EditableSection } from "@/components/editable/section";
 import { useEdit } from "@/lib/edit-context";
 import { useUtm } from "@/lib/use-utm";
+import { normalizeIsraeliPhone } from "@/lib/phone-utils";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 type Errors = Partial<Record<"name" | "phone" | "email" | "form", string>>;
@@ -185,10 +186,10 @@ export function BoldLeadForm({
                       name="phone"
                       type="tel"
                       dir="ltr"
-                      autoComplete="tel"
+                      autoComplete="tel-national"
                       inputMode="tel"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => setPhone(normalizeIsraeliPhone(e.target.value))}
                       aria-invalid={!!errors.phone}
                       disabled={editing}
                     />

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Rocket } from "lucide-react";
 import { useUtm } from "@/lib/use-utm";
+import { normalizeIsraeliPhone } from "@/lib/phone-utils";
 import { EditableSection } from "@/components/editable/section";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
@@ -112,8 +113,10 @@ export function EnergeticLeadForm({
                   id={`${idp}phone-en`}
                   type="tel"
                   dir="ltr"
+                  autoComplete="tel-national"
+                  inputMode="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(normalizeIsraeliPhone(e.target.value))}
                   aria-invalid={!!errors.phone}
                 />
                 {errors.phone && <p className="text-sm text-destructive font-bold">{errors.phone}</p>}
