@@ -10,7 +10,7 @@ import { EditableBanner } from "@/components/editable/banner";
 
 export function BoldHeroTemplate({ config, slug }: { config: CampaignConfig; slug?: string }) {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white overflow-x-clip">
       <BoldHero config={config} />
       <BoldLeadForm config={config} slug={slug} placement="top" />
       {config.intro && <BoldIntro intro={config.intro} />}

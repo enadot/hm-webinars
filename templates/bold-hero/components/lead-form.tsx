@@ -90,7 +90,7 @@ export function BoldLeadForm({
     <EditableSection
       sectionKey={sectionKey}
       id={sectionId}
-      className="relative py-20 md:py-28 lg:py-32 bg-mesh-hero text-white overflow-hidden"
+      className="relative py-12 sm:py-20 md:py-28 lg:py-32 bg-mesh-hero text-white overflow-hidden"
     >
       <div className="absolute -top-40 -right-40 w-[40rem] h-[40rem] bg-brand-gold/25 rounded-full blur-3xl animate-blob" />
       <div className="absolute -bottom-40 -left-40 w-[40rem] h-[40rem] bg-brand-purple/30 rounded-full blur-3xl animate-blob-slow" />
@@ -103,7 +103,7 @@ export function BoldLeadForm({
               <Sparkles className="size-5" />
               <EditableText path="form.eyebrow" as="span" placeholder="באדג'" />
             </div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.02] mb-6 tracking-tight">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.02] mb-6 tracking-tight">
               <EditableText path="form.title" as="span" placeholder="כותרת" />
               <br />
               <EditableText
@@ -142,7 +142,7 @@ export function BoldLeadForm({
           <div className="lg:col-span-3">
             <Card className="border-0 shadow-2xl rounded-3xl overflow-hidden">
               <div className="h-2 bg-gradient-to-r from-brand-gold-light via-brand-coral to-brand-purple-2" />
-              <CardContent className="p-8 md:p-12">
+              <CardContent className="p-6 sm:p-8 md:p-12">
                 <EditableText
                   path="form.cardTitle"
                   as="h3"

@@ -78,11 +78,11 @@ export function EnergeticLeadForm({
   }
 
   return (
-    <EditableSection sectionKey={sectionKey} id={sectionId} className="py-20 md:py-28 bg-yellow-300">
+    <EditableSection sectionKey={sectionKey} id={sectionId} className="py-12 sm:py-20 md:py-28 bg-yellow-300">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-10">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.02] mb-4">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-[1.02] mb-4">
               {form.title}{" "}
               {form.titleAccent && (
                 <span className="bg-black text-yellow-300 px-3 inline-block -rotate-1">
@@ -95,7 +95,7 @@ export function EnergeticLeadForm({
             )}
           </div>
 
-          <div className="bg-white border-4 border-black rounded-3xl p-8 md:p-10 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+          <div className="bg-white border-4 border-black rounded-3xl p-6 sm:p-8 md:p-10 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor={`${idp}name-en`} className="text-base font-extrabold">שם מלא</Label>

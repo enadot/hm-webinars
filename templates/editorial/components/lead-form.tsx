@@ -81,11 +81,11 @@ export function EditorialLeadForm({
     <EditableSection
       sectionKey={sectionKey}
       id={sectionId}
-      className="py-20 md:py-28"
+      className="py-12 sm:py-20 md:py-28"
       style={{ backgroundColor: config.theme.primary }}
     >
       <div className="container mx-auto px-4">
-        <div className="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-2xl">
+        <div className="max-w-2xl mx-auto bg-white p-6 sm:p-8 md:p-12 rounded-2xl shadow-2xl">
           <div className="text-sm font-bold text-stone-500 tracking-[0.2em] uppercase mb-3">
             {form.eyebrow}
           </div>

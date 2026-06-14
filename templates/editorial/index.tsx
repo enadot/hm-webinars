@@ -16,7 +16,7 @@ export function EditorialTemplate({
   const { hero, webinar, speakers, bullets, brand, intro } = config;
 
   return (
-    <main className="min-h-screen bg-stone-50 text-stone-900">
+    <main className="min-h-screen bg-stone-50 text-stone-900 overflow-x-clip">
       {/* Top bar */}
       {brand.logoUrl && (
         <header className="border-b border-stone-200 bg-white">
