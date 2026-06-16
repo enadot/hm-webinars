@@ -47,7 +47,43 @@ async function postJson<T>(path: string, body: unknown, token?: string): Promise
     parsed = text;
   }
   if (!res.ok) {
-    throw new SendmsgError(`sendmsg ${path} ${res.status}`, res.status, parsed);
+    throw new SendmsgError(`sendmsg ${path} HTTP ${res.status}`, res.status, parsed);
+  }
+  // sendmsg often returns HTTP 200 with a Status field signalling a logical
+  // error (codes 410, 500, 530, etc. — see the API docs status-codes table).
+  if (parsed && typeof parsed === "object") {
+    const rec = parsed as Record<string, unknown>;
+    const status = (rec.Status ?? rec.status) as number | string | undefined;
+    if (status !== undefined) {
+      const n = Number(status);
+      if (Number.isFinite(n) && n !== 200 && n !== 10000) {
+        const msg = String(rec.ResultMessage ?? rec.resultMessage ?? "(no ResultMessage)");
+        throw new SendmsgError(
+          `sendmsg ${path} status ${n}: ${msg}`,
+          n,
+          parsed,
+        );
+      }
+    }
+  }
+  return parsed as T;
+}
+
+async function getJson<T>(path: string, token?: string): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "GET",
+    headers: { ...(token ? { Authorization: token } : {}) },
+    cache: "no-store",
+  });
+  const text = await res.text();
+  let parsed: unknown;
+  try {
+    parsed = text ? JSON.parse(text) : {};
+  } catch {
+    parsed = text;
+  }
+  if (!res.ok) {
+    throw new SendmsgError(`sendmsg ${path} HTTP ${res.status}`, res.status, parsed);
   }
   return parsed as T;
 }
@@ -84,11 +120,31 @@ export async function testConnection(
   }
 }
 
+function extractListId(res: Record<string, unknown>): number | null {
+  // The Apiary page doesn't pin down the success-response shape; cover the
+  // common variants AND the sendmsg pattern of returning the ID inside
+  // ResultMessage as a string.
+  const candidates: Array<unknown> = [
+    res.NewListID, res.ListID, res.ListId, res.MailingListID, res.ID, res.id,
+  ];
+  const nested = res.Result as Record<string, unknown> | undefined;
+  if (nested && typeof nested === "object") {
+    candidates.push(nested.NewListID, nested.ListID, nested.ListId, nested.ID, nested.id);
+  }
+  const rm = res.ResultMessage ?? res.resultMessage;
+  if (typeof rm === "number") candidates.push(rm);
+  if (typeof rm === "string" && /^\d+$/.test(rm.trim())) candidates.push(Number(rm.trim()));
+  for (const c of candidates) {
+    if (typeof c === "number" && Number.isFinite(c)) return c;
+  }
+  return null;
+}
+
 export async function createMailingList(
   creds: SendmsgCreds,
   name: string,
   description?: string,
-): Promise<number> {
+): Promise<{ listId: number; raw: Record<string, unknown> }> {
   const token = await getToken(creds);
   const res = await postJson<Record<string, unknown>>(
     "/CreateMalingList",
@@ -99,19 +155,28 @@ export async function createMailingList(
     },
     token,
   );
-  // The API's exact response field name for new-list ID isn't documented in
-  // the public Apiary page; accept the likely variants.
-  const id =
-    (res.NewListID as number | undefined) ??
-    (res.ListID as number | undefined) ??
-    (res.ListId as number | undefined) ??
-    (res.MailingListID as number | undefined) ??
-    (res.ID as number | undefined) ??
-    (res.id as number | undefined);
-  if (typeof id !== "number") {
-    throw new SendmsgError("no list ID in response", undefined, res);
+  console.log("[sendmsg] CreateMalingList raw:", JSON.stringify(res));
+  const listId = extractListId(res);
+  if (listId == null) {
+    throw new SendmsgError(
+      `no list ID in CreateMalingList response: ${JSON.stringify(res)}`,
+      undefined,
+      res,
+    );
   }
-  return id;
+  return { listId, raw: res };
+}
+
+/**
+ * GET /GetAllMalingLists — returns all mailing lists on the account.
+ * Used as a fallback when CreateMalingList's response shape is unparseable
+ * (we can find the just-created list by name).
+ */
+export async function getAllMailingLists(
+  creds: SendmsgCreds,
+): Promise<Record<string, unknown>> {
+  const token = await getToken(creds);
+  return await getJson<Record<string, unknown>>("/GetAllMalingLists", token);
 }
 
 export type SendmsgUser = {
@@ -125,9 +190,9 @@ export async function addUserToList(
   creds: SendmsgCreds,
   listId: number,
   user: SendmsgUser,
-): Promise<void> {
+): Promise<Record<string, unknown>> {
   const token = await getToken(creds);
-  await postJson(
+  const res = await postJson<Record<string, unknown>>(
     "/AddUsersToLists",
     {
       users: [
@@ -135,13 +200,17 @@ export async function addUserToList(
           EmailAddress: user.email,
           FirstName: user.firstName ?? "",
           LastName: user.lastName ?? "",
-          Phone: user.phone ?? "",
+          // sendmsg's field is `Cellphone`, not `Phone` — was the silent reason
+          // leads didn't fully sync earlier.
+          Cellphone: user.phone ?? "",
         },
       ],
       mailingLists: [{ ExistingListID: listId }],
     },
     token,
   );
+  console.log("[sendmsg] AddUsersToLists raw:", JSON.stringify(res));
+  return res;
 }
 
 // ----- Messages / campaigns -----

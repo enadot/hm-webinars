@@ -37,7 +37,12 @@ export async function ensureCampaignList(
   const listName = (sm?.listName || "").trim() || campaign.name || campaign.slug;
   let listId: number;
   try {
-    listId = await createMailingList(creds, listName, `Auto-created from /${campaign.slug}`);
+    const created = await createMailingList(
+      creds,
+      listName,
+      `Auto-created from /${campaign.slug}`,
+    );
+    listId = created.listId;
   } catch (e) {
     logSendmsg("createMailingList", e);
     return null;

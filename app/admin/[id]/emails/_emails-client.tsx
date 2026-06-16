@@ -17,6 +17,7 @@ import {
   Eye,
   EyeOff,
   X,
+  Activity,
 } from "lucide-react";
 
 export type EmailStatus = "draft" | "scheduled" | "sent" | "failed";
@@ -61,6 +62,7 @@ export function EmailsClient({
   const [editing, setEditing] = useState<Editing>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [presetBusy, setPresetBusy] = useState(false);
+  const [debugOpen, setDebugOpen] = useState(false);
   const [, startTransition] = useTransition();
 
   function refresh() {
@@ -197,7 +199,25 @@ export function EmailsClient({
           {presetBusy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
           סט תזכורות לוובינר
         </button>
+        <button
+          type="button"
+          onClick={() => setDebugOpen(true)}
+          disabled={!sendmsgConfigured}
+          className="inline-flex items-center gap-2 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-bold hover:bg-slate-100 disabled:opacity-50 text-sm ms-auto"
+          title="בודק את שרשרת הסנכרון מול שלח מסר ומציג תגובות גולמיות"
+        >
+          <Activity className="size-4" />
+          בדיקת סנכרון
+        </button>
       </div>
+
+      {debugOpen && (
+        <SyncDebugDialog
+          campaignId={campaignId}
+          campaignName={campaignName}
+          onClose={() => setDebugOpen(false)}
+        />
+      )}
 
       {emails.length === 0 ? (
         <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center">
@@ -587,4 +607,195 @@ function formatDateTime(iso: string): string {
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
   if (!m) return iso;
   return `${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;
+}
+
+// ---------------- Debug dialog: sync round-trip ----------------
+
+type DebugStep = {
+  step: string;
+  ok: boolean;
+  info?: string;
+  error?: string;
+  raw?: unknown;
+};
+type DebugResult = { ok: boolean; steps: DebugStep[]; listId?: number | null };
+
+function SyncDebugDialog({
+  campaignId,
+  campaignName,
+  onClose,
+}: {
+  campaignId: string;
+  campaignName: string;
+  onClose: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<DebugResult | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  async function run() {
+    setBusy(true);
+    setResult(null);
+    setFetchError(null);
+    try {
+      const res = await fetch(`/api/admin/campaigns/${campaignId}/sendmsg-debug`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim() || undefined,
+          name: name.trim() || undefined,
+          phone: phone.trim() || undefined,
+        }),
+      });
+      const json = (await res.json()) as DebugResult & { error?: string };
+      if (!res.ok && !json?.steps) {
+        setFetchError(json?.error || `HTTP ${res.status}`);
+      } else {
+        setResult(json);
+      }
+    } catch (e) {
+      setFetchError(String(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl max-w-2xl w-full my-8 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <Activity className="size-5 text-emerald-600" />
+            <h3 className="font-extrabold text-slate-900">בדיקת סנכרון — {campaignName}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="size-8 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-500"
+            aria-label="סגור"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <p className="text-sm text-slate-600">
+            הבדיקה תאמת טוקן, תוודא שיש רשימה לקמפיין (תיצור אם אין), ואם תזינו אימייל
+            — תוסיף משתמש בדיקה לרשימה. כל התגובות הגולמיות יוצגו למטה.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700">אימייל (אופציונלי)</label>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                dir="ltr"
+                placeholder="test@example.com"
+                className="w-full h-9 rounded-md border border-slate-300 px-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700">שם</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="ישראל ישראלי"
+                className="w-full h-9 rounded-md border border-slate-300 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-slate-700">טלפון</label>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                dir="ltr"
+                placeholder="0501234567"
+                className="w-full h-9 rounded-md border border-slate-300 px-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={run}
+              disabled={busy}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-bold hover:brightness-110 disabled:opacity-50 text-sm"
+            >
+              {busy ? <Loader2 className="size-4 animate-spin" /> : <Activity className="size-4" />}
+              הרץ בדיקה
+            </button>
+          </div>
+
+          {fetchError && (
+            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md px-3 py-2 flex items-start gap-2">
+              <AlertCircle className="size-4 shrink-0 mt-0.5" />
+              <span>{fetchError}</span>
+            </div>
+          )}
+
+          {result && (
+            <div className="space-y-2">
+              <div
+                className={`text-xs font-bold inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${
+                  result.ok
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-red-50 text-red-700 border-red-200"
+                }`}
+              >
+                {result.ok ? <Check className="size-3" /> : <AlertCircle className="size-3" />}
+                {result.ok ? "כל השלבים עברו" : "אחד או יותר נכשל"}
+                {result.listId != null && <span className="ms-2 font-mono">listId={result.listId}</span>}
+              </div>
+              <ol className="space-y-2">
+                {result.steps.map((s, i) => (
+                  <li
+                    key={i}
+                    className={`rounded-lg border p-3 text-sm ${
+                      s.ok
+                        ? "border-emerald-200 bg-emerald-50/40"
+                        : "border-red-200 bg-red-50/40"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 font-bold">
+                      {s.ok ? (
+                        <Check className="size-4 text-emerald-700" />
+                      ) : (
+                        <AlertCircle className="size-4 text-red-700" />
+                      )}
+                      <span>{s.step}</span>
+                    </div>
+                    {s.info && <p className="mt-1 text-slate-700">{s.info}</p>}
+                    {s.error && (
+                      <p className="mt-1 text-destructive break-all" dir="ltr">
+                        {s.error}
+                      </p>
+                    )}
+                    {s.raw !== undefined && s.raw !== null && (
+                      <pre
+                        dir="ltr"
+                        className="mt-2 text-[11px] font-mono bg-white border border-slate-200 rounded p-2 overflow-x-auto max-h-48 overflow-y-auto"
+                      >
+                        {JSON.stringify(s.raw, null, 2)}
+                      </pre>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
