@@ -23,6 +23,8 @@
 | תיאום סטטוס "מתוזמן → נשלח" כשהזמן עבר | [/admin/[id]/emails](../app/admin/[id]/emails/page.tsx) | ✅ |
 | סטטיסטיקות (פתיחות/קליקים/החזרות) | [emails/[emailId]/stats](../app/api/admin/campaigns/[id]/emails/[emailId]/stats/route.ts) | ✅ |
 | כלי דיבוג אינטראקטיבי | [sendmsg-debug](../app/api/admin/campaigns/[id]/sendmsg-debug/route.ts) | ✅ |
+| משתני personalization בעורך (Phase A) | [_emails-client.tsx](../app/admin/[id]/emails/_emails-client.tsx) + [lib/email-blocks.ts](../lib/email-blocks.ts) | ✅ |
+| בלוקי HTML + תבניות פתיחה (Phase B) | [lib/email-blocks.ts](../lib/email-blocks.ts) | ✅ |
 
 ---
 
@@ -238,7 +240,18 @@ timezone math. בעת שליחה — `formatPostponeSendTime` ב-sendmsg.ts ממ
 
 מסודר לפי **עלות לפיתוח / יחס תועלת**, מהמהיר למורכב.
 
-### Phase A — הוספת משתני personalization (~יום עבודה)
+### Phase A — הוספת משתני personalization ✅ בוצע (2026-06-16)
+
+> **סטטוס:** מומש עם **שדות מערכת בלבד** (frontend-only). סרגל "משתנים אישיים"
+> מעל ה-textarea מזריק `[|[FirstName]|]` / `[|[LastName]|]` / `[|[EmailAddress]|]` /
+> `[|[Cellphone]|]` ב-position של ה-cursor (`insertAtCursor` ב-[_emails-client.tsx](../app/admin/[id]/emails/_emails-client.tsx)).
+> הרשימה ב-`PERSONALIZATION_VARS` ב-[lib/email-blocks.ts](../lib/email-blocks.ts).
+> התצוגה המקדימה מדגישה את ה-placeholders בצהוב (`highlightPlaceholders`, preview-only).
+> `defaultSkeleton` עודכן ל-`[|[FirstName]|]`.
+>
+> **לא מומש (נדחה):** custom keys דרך `userSendFields` (דורש שינוי backend/DB).
+> **לאמת:** שמות השדות `EmailAddress`/`Cellphone` הם best-effort — לאמת מול
+> שליחת טסט ב"בדיקת סנכרון" (`FirstName`/`LastName` מתועדים רשמית).
 
 **מה:** כפתורים מעל ה-HTML textarea שמכניסים placeholder של שלח מסר
 בקליק. למשל "שם פרטי" → מכניס ב-cursor `[|[FirstName]|]`.
@@ -264,7 +277,14 @@ timezone math. בעת שליחה — `formatPostponeSendTime` ב-sendmsg.ts ממ
 **קבצים שמשתנים:** `_emails-client.tsx` (toolbar + EmailEditor), אופציונלית
 גם `sendmsg.ts` (תמיכה ב-userSendFields).
 
-### Phase B — ספריית קומפוננטות "הזרק" (~2-3 ימי עבודה)
+### Phase B — ספריית קומפוננטות "הזרק" ✅ בוצע (2026-06-16)
+
+> **סטטוס:** `BLOCKS` ב-[lib/email-blocks.ts](../lib/email-blocks.ts) מספק 7 בלוקים
+> (כותרת ראשית, פסקה, תמונה, כפתור CTA, רשימת בולטים, חוצץ, חתימה) שמוזרקים
+> ב-cursor. בנוסף `TEMPLATES` מספק 4 תבניות פתיחה מלאות (Hero ממוקד, ניוזלטר,
+> מבצע, טקסט פשוט) דרך כפתורי "התחל מתבנית" (עם `confirm` לפני החלפת תוכן).
+> הכל email-safe (table-based, inline styles, RTL), בלי תלות חיצונית, התצוגה
+> המקדימה ממשיכה לעבוד כרגיל.
 
 **מה:** במקום drag-and-drop מלא, כפתורים שמזריקים בלוקים מוכנים של HTML
 לתוך ה-textarea, ב-position של ה-cursor:

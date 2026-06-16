@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus,
@@ -19,7 +19,32 @@ import {
   X,
   Activity,
   BarChart3,
+  Heading,
+  Type,
+  Image as ImageIcon,
+  MousePointerClick,
+  List,
+  Minus,
+  PenLine,
+  LayoutTemplate,
 } from "lucide-react";
+import {
+  BLOCKS,
+  TEMPLATES,
+  PERSONALIZATION_VARS,
+  highlightPlaceholders,
+  type EmailBlock,
+} from "@/lib/email-blocks";
+
+const BLOCK_ICONS: Record<string, typeof Heading> = {
+  Heading,
+  Type,
+  Image: ImageIcon,
+  MousePointerClick,
+  List,
+  Minus,
+  PenLine,
+};
 
 export type EmailStatus = "draft" | "scheduled" | "sent" | "failed";
 
@@ -417,6 +442,38 @@ function EmailEditor({
   const [scheduledAt, setScheduledAt] = useState(initial?.scheduledAt ?? "");
   const [showPreview, setShowPreview] = useState(true);
   const [saving, setSaving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // מזריק טקסט ב-position של ה-cursor (או בסוף אם אין focus), ומחזיר את
+  // ה-caret אחרי הקטע שהוזרק.
+  function insertAtCursor(snippet: string) {
+    const el = textareaRef.current;
+    const start = el?.selectionStart ?? html.length;
+    const end = el?.selectionEnd ?? html.length;
+    const next = html.slice(0, start) + snippet + html.slice(end);
+    setHtml(next);
+    const caret = start + snippet.length;
+    setTimeout(() => {
+      const node = textareaRef.current;
+      if (!node) return;
+      node.focus();
+      node.setSelectionRange(caret, caret);
+    }, 0);
+  }
+
+  function insertBlock(block: EmailBlock) {
+    insertAtCursor(block.html());
+  }
+
+  function applyTemplate(tpl: (typeof TEMPLATES)[number]) {
+    if (
+      html.trim() &&
+      !confirm("פעולה זו תחליף את כל תוכן ה-HTML הנוכחי. להמשיך?")
+    ) {
+      return;
+    }
+    setHtml(tpl.html({ campaignName, campaignSlug }));
+  }
 
   async function save(andSend: boolean) {
     if (!name.trim()) {
@@ -510,14 +567,68 @@ function EmailEditor({
             </Field>
           </div>
 
+          <Field label="התחל מתבנית" hint="מחליף את כל תוכן ה-HTML בתבנית מוכנה">
+            <div className="flex flex-wrap gap-1.5">
+              {TEMPLATES.map((tpl) => (
+                <button
+                  key={tpl.key}
+                  type="button"
+                  onClick={() => applyTemplate(tpl)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold border border-slate-300 rounded-lg text-slate-600 hover:bg-slate-50"
+                >
+                  <LayoutTemplate className="size-3.5" />
+                  {tpl.label}
+                </button>
+              ))}
+            </div>
+          </Field>
+
           <Field label="תוכן HTML">
-            <textarea
-              value={html}
-              onChange={(e) => setHtml(e.target.value)}
-              rows={14}
-              className="w-full rounded-md border border-slate-300 px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-primary"
-              dir="ltr"
-            />
+            <div className="space-y-2">
+              <div className="space-y-2 rounded-md border border-slate-200 bg-slate-50 p-2.5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 ml-1">משתנים אישיים:</span>
+                  {PERSONALIZATION_VARS.map((v) => (
+                    <button
+                      key={v.token}
+                      type="button"
+                      onClick={() => insertAtCursor(v.token)}
+                      title={v.hint}
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold bg-white border border-slate-300 rounded-md text-slate-700 hover:border-brand-primary hover:text-brand-primary"
+                    >
+                      <Sparkles className="size-3" />
+                      {v.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 ml-1">בלוקים:</span>
+                  {BLOCKS.map((block) => {
+                    const Icon = BLOCK_ICONS[block.icon] ?? Plus;
+                    return (
+                      <button
+                        key={block.key}
+                        type="button"
+                        onClick={() => insertBlock(block)}
+                        title={`הזרק ${block.label}`}
+                        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold bg-white border border-slate-300 rounded-md text-slate-700 hover:border-brand-primary hover:text-brand-primary"
+                      >
+                        <Icon className="size-3" />
+                        {block.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              <textarea
+                ref={textareaRef}
+                value={html}
+                onChange={(e) => setHtml(e.target.value)}
+                rows={14}
+                className="w-full rounded-md border border-slate-300 px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                dir="ltr"
+              />
+            </div>
           </Field>
 
           <Field
@@ -574,9 +685,11 @@ function EmailEditor({
 
         {showPreview && (
           <div className="p-5 bg-slate-50">
-            <div className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">תצוגה מקדימה</div>
+            <div className="text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">
+              תצוגה מקדימה <span className="font-normal normal-case">(משתנים אישיים מודגשים בצהוב)</span>
+            </div>
             <iframe
-              srcDoc={html}
+              srcDoc={highlightPlaceholders(html)}
               title="email preview"
               className="w-full h-[600px] bg-white border border-slate-200 rounded-lg"
               sandbox=""
@@ -615,7 +728,7 @@ function defaultSkeleton(campaignName: string, campaignSlug: string): string {
     <tr><td align="center">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden">
         <tr><td style="padding:32px">
-          <h1 style="font-size:24px;font-weight:800;margin:0 0 16px;color:#0B1437">היי [שם]</h1>
+          <h1 style="font-size:24px;font-weight:800;margin:0 0 16px;color:#0B1437">היי [|[FirstName]|]</h1>
           <p style="font-size:16px;line-height:1.6;margin:0 0 16px;color:#1f2937">תוכן המייל כאן…</p>
           <a href="https://hm-webinars.vercel.app/${escapeAttr(campaignSlug)}" style="display:inline-block;background:#F5B500;color:#0B1437;font-weight:800;text-decoration:none;padding:12px 24px;border-radius:10px">לעמוד הוובינר</a>
         </td></tr>
