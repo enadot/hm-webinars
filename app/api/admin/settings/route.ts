@@ -27,6 +27,8 @@ const PatchSchema = z.object({
   sendmsg: z.object({
     siteId: z.union([z.number().int().positive(), z.null()]).optional(),
     password: z.union([z.string(), z.null()]).optional(),
+    defaultSenderEmail: z.union([z.string(), z.null()]).optional(),
+    defaultSenderName: z.union([z.string(), z.null()]).optional(),
   }),
 });
 
@@ -55,7 +57,26 @@ export async function PATCH(request: Request) {
       ? current?.password ?? null
       : sendmsg.password; // null clears, non-empty sets
 
-  await setSendmsgConfig({ siteId: nextSiteId, password: nextPassword });
+  // Default sender: empty string clears, null clears, non-empty sets, undefined leaves alone.
+  const senderEmail =
+    sendmsg.defaultSenderEmail === undefined
+      ? undefined
+      : sendmsg.defaultSenderEmail === ""
+      ? null
+      : sendmsg.defaultSenderEmail;
+  const senderName =
+    sendmsg.defaultSenderName === undefined
+      ? undefined
+      : sendmsg.defaultSenderName === ""
+      ? null
+      : sendmsg.defaultSenderName;
+
+  await setSendmsgConfig({
+    siteId: nextSiteId,
+    password: nextPassword,
+    defaultSenderEmail: senderEmail,
+    defaultSenderName: senderName,
+  });
 
   const updated = await getSendmsgPublicStatus();
   return NextResponse.json({ ok: true, sendmsg: updated });

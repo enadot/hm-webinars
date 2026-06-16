@@ -252,14 +252,21 @@ function buildMessage(
   m: SendmsgMessage,
   extra?: Record<string, unknown>,
 ): Record<string, unknown> {
+  // Mirror the full docs-example shape — sendmsg's backend has NRE'd in the
+  // past when optional fields were absent, so we always populate every field
+  // they document, with safe defaults.
   const body: Record<string, unknown> = {
     MessageContent: m.content,
     MessageSubject: m.subject,
     MessageInnerName: m.innerName,
     MessageDirection: m.direction ?? 1,
+    SenderEmailAddress: m.senderEmail ?? "",
+    SenderName: m.senderName ?? "",
+    MessageBackColor: "#ffffff",
+    AddFacebook: false,
+    AddForward: false,
+    AddShowMessage: true,
   };
-  if (m.senderEmail) body.SenderEmailAddress = m.senderEmail;
-  if (m.senderName) body.SenderName = m.senderName;
   if (extra) Object.assign(body, extra);
   return body;
 }

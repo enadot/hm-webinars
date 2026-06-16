@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/db";
 import { verifySessionCookie, SESSION_COOKIE } from "@/lib/auth";
-import { getSendmsgConfig } from "@/lib/app-settings";
+import { getSendmsgConfig, getSendmsgDefaultSender } from "@/lib/app-settings";
 import {
   dispatchMessageToList,
   SendmsgError,
@@ -67,12 +67,33 @@ export async function POST(
     );
   }
 
+  // Sender: prefer per-template override, fall back to the global default.
+  // Without a sender at all, sendmsg returns a server-side NRE
+  // ("Object reference not set"), so we refuse with a clear error first.
+  const sender = await getSendmsgDefaultSender();
+  const senderEmail = (email.senderEmail || sender.email || "").trim();
+  const senderName = (email.senderName || sender.name || campaign.name || "").trim();
+  if (!senderEmail) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "אימייל שולח לא הוגדר. הזינו אחד בתבנית, או הגדירו שולח ברירת מחדל ב-/admin/settings.",
+      },
+      { status: 400 },
+    );
+  }
+
+  // ASCII-only InnerName (Hebrew in this internal label has caused parsing
+  // failures in the sendmsg dashboard — slug only).
+  const innerName = `${campaign.slug}-${email.id.slice(0, 6)}`;
+
   const message: SendmsgMessage = {
     subject: email.subject,
     content: email.html,
-    innerName: `${campaign.slug}: ${email.name}`,
-    senderEmail: email.senderEmail ?? undefined,
-    senderName: email.senderName ?? undefined,
+    innerName,
+    senderEmail,
+    senderName,
     direction: 1, // RTL (Hebrew)
   };
 

@@ -4,12 +4,19 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Mail, Check, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 
-type SendmsgStatus = { configured: boolean; siteId: number | null };
+type SendmsgStatus = {
+  configured: boolean;
+  siteId: number | null;
+  defaultSenderEmail: string | null;
+  defaultSenderName: string | null;
+};
 
 export function SettingsForm({ sendmsg }: { sendmsg: SendmsgStatus }) {
   const router = useRouter();
   const [siteId, setSiteId] = useState<string>(sendmsg.siteId?.toString() ?? "");
   const [password, setPassword] = useState<string>("");
+  const [senderEmail, setSenderEmail] = useState<string>(sendmsg.defaultSenderEmail ?? "");
+  const [senderName, setSenderName] = useState<string>(sendmsg.defaultSenderName ?? "");
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [testState, setTestState] = useState<
@@ -38,6 +45,8 @@ export function SettingsForm({ sendmsg }: { sendmsg: SendmsgStatus }) {
         sendmsg: {
           siteId: sidNum,
           password: password, // "" means keep existing
+          defaultSenderEmail: senderEmail.trim(),
+          defaultSenderName: senderName.trim(),
         },
       }),
     });
@@ -132,6 +141,35 @@ export function SettingsForm({ sendmsg }: { sendmsg: SendmsgStatus }) {
             className="w-full h-10 rounded-md border border-slate-300 px-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-primary"
           />
         </Field>
+
+        <div className="pt-4 border-t border-slate-100">
+          <div className="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3">
+            שולח ברירת מחדל
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Field label="שם השולח" hint="לדוגמה: צוות הוובינר">
+              <input
+                value={senderName}
+                onChange={(e) => setSenderName(e.target.value)}
+                placeholder=""
+                className="w-full h-10 rounded-md border border-slate-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              />
+            </Field>
+            <Field
+              label="אימייל השולח"
+              hint="חייב להיות מאומת בחשבון שלח מסר. ישמש כברירת מחדל לכל מייל בלי שולח משלו."
+            >
+              <input
+                value={senderEmail}
+                onChange={(e) => setSenderEmail(e.target.value)}
+                dir="ltr"
+                placeholder="hello@example.com"
+                type="email"
+                className="w-full h-10 rounded-md border border-slate-300 px-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              />
+            </Field>
+          </div>
+        </div>
 
         {error && (
           <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md px-3 py-2 flex items-center gap-2">
