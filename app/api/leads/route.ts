@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { safeParseConfig } from "@/lib/campaign-schema";
 import { getSendmsgConfig } from "@/lib/app-settings";
-import {
-  addUserToList,
-  createMailingList,
-  SendmsgError,
-  type SendmsgCreds,
-} from "@/lib/sendmsg";
+import { addUserToList } from "@/lib/sendmsg";
+import { ensureCampaignList, logSendmsg } from "@/lib/sendmsg-campaign";
 
 const PHONE_RE = /^0\d{8,9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -142,54 +137,18 @@ async function syncLeadToSendmsg(
   lead: { name: string; phone: string; email: string },
 ): Promise<void> {
   const creds = await getSendmsgConfig();
-  if (!creds) return; // not configured globally → silent no-op
+  if (!creds) return;
 
-  const parsed = safeParseConfig(JSON.parse(campaign.config));
-  if (!parsed.ok) {
-    console.error("[leads] sendmsg: invalid campaign config", parsed.error);
-    return;
-  }
-  const sm = parsed.data.integrations?.sendmsg;
-  if (sm && sm.enabled === false) return; // opted out
+  const listId = await ensureCampaignList(creds, campaign);
+  if (!listId) return;
 
-  const listName = (sm?.listName || "").trim() || campaign.name || campaign.slug;
-
-  let listId = sm?.listId;
-  if (!listId) {
-    try {
-      listId = await createMailingList(creds, listName, `Auto-created from /${campaign.slug}`);
-    } catch (e) {
-      logSendmsg("createMailingList", e);
-      return;
-    }
-    // Cache the listId on the campaign config so we don't recreate it.
-    const nextConfig = {
-      ...parsed.data,
-      integrations: {
-        ...(parsed.data.integrations ?? {}),
-        sendmsg: {
-          ...(parsed.data.integrations?.sendmsg ?? { enabled: true, listName: "" }),
-          listId,
-        },
-      },
-    };
-    try {
-      await prisma.campaign.update({
-        where: { id: campaign.id },
-        data: { config: JSON.stringify(nextConfig) },
-      });
-    } catch (e) {
-      console.error("[leads] sendmsg: failed to cache listId on campaign:", e);
-    }
-  }
-
-  // Split "first last" into FirstName / LastName (sendmsg has separate fields).
+  // Split "first last" — sendmsg has separate fields.
   const space = lead.name.indexOf(" ");
   const firstName = space === -1 ? lead.name : lead.name.slice(0, space);
   const lastName = space === -1 ? "" : lead.name.slice(space + 1);
 
   try {
-    await addUserToList(creds as SendmsgCreds, listId, {
+    await addUserToList(creds, listId, {
       email: lead.email,
       firstName,
       lastName,
@@ -197,13 +156,5 @@ async function syncLeadToSendmsg(
     });
   } catch (e) {
     logSendmsg("addUserToList", e);
-  }
-}
-
-function logSendmsg(op: string, e: unknown): void {
-  if (e instanceof SendmsgError) {
-    console.error(`[leads] sendmsg ${op} failed (${e.status ?? "?"}):`, e.message, e.body);
-  } else {
-    console.error(`[leads] sendmsg ${op} failed:`, e);
   }
 }

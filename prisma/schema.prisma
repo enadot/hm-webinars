@@ -23,6 +23,28 @@ model Campaign {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   leads             Lead[]
+  emails            EmailTemplate[]
+}
+
+// Per-campaign email template that can be sent / scheduled via שלח מסר.
+model EmailTemplate {
+  id               String    @id @default(cuid())
+  campaignId       String
+  campaign         Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name             String    // internal label, e.g. "תזכורת 24 שעות"
+  subject          String
+  html             String
+  senderEmail      String?
+  senderName       String?
+  scheduledAt      String?   // literal Asia/Jerusalem datetime "YYYY-MM-DDTHH:mm"
+  sentAt           DateTime?
+  sendmsgMessageId Int?      // returned by sendmsg on successful dispatch
+  status           String    @default("draft") // draft | scheduled | sent | failed
+  errorMessage     String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([campaignId])
 }
 
 // Global key/value app settings (e.g. third-party API credentials).

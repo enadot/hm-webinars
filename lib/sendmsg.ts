@@ -143,3 +143,138 @@ export async function addUserToList(
     token,
   );
 }
+
+// ----- Messages / campaigns -----
+
+export type SendmsgMessage = {
+  subject: string;
+  content: string;       // HTML
+  innerName: string;     // internal label shown in the sendmsg dashboard
+  senderEmail?: string;
+  senderName?: string;
+  /** 1 = RTL (Hebrew), 2 = LTR. Defaults to 1. */
+  direction?: 1 | 2;
+};
+
+function buildMessage(
+  m: SendmsgMessage,
+  extra?: Record<string, unknown>,
+): Record<string, unknown> {
+  const body: Record<string, unknown> = {
+    MessageContent: m.content,
+    MessageSubject: m.subject,
+    MessageInnerName: m.innerName,
+    MessageDirection: m.direction ?? 1,
+  };
+  if (m.senderEmail) body.SenderEmailAddress = m.senderEmail;
+  if (m.senderName) body.SenderName = m.senderName;
+  if (extra) Object.assign(body, extra);
+  return body;
+}
+
+/**
+ * Format a JS Date (or "YYYY-MM-DDTHH:mm" literal) as a sendmsg-style
+ * "YYYY-MM-DD HH:mm:ss" string in Asia/Jerusalem time.
+ */
+export function formatPostponeSendTime(input: Date | string): string {
+  if (typeof input === "string") {
+    // Treat the input as already-local "YYYY-MM-DDTHH:mm[:ss]".
+    const m = input.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/);
+    if (m) return `${m[1]} ${m[2]}:${m[3]}:${m[4] ?? "00"}`;
+  }
+  const d = typeof input === "string" ? new Date(input) : input;
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jerusalem",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    fmt.formatToParts(d).map((p) => [p.type, p.value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
+}
+
+/**
+ * Create a draft / scheduled message. Returns the new messageID.
+ * If `postponeSendTime` is provided, sendmsg stores it on the draft.
+ */
+export async function createMessage(
+  creds: SendmsgCreds,
+  m: SendmsgMessage,
+  options?: { postponeSendTime?: string },
+): Promise<number> {
+  const token = await getToken(creds);
+  const body = buildMessage(
+    m,
+    options?.postponeSendTime ? { PostponeSendTime: options.postponeSendTime } : undefined,
+  );
+  const res = await postJson<Record<string, unknown>>(
+    "/CreateMessage",
+    body,
+    token,
+  );
+  const id =
+    (res.newMessageID as number | undefined) ??
+    (res.NewMessageID as number | undefined) ??
+    (res.MessageID as number | undefined) ??
+    (res.messageID as number | undefined) ??
+    (res.id as number | undefined);
+  if (typeof id !== "number") {
+    throw new SendmsgError("no messageID in CreateMessage response", undefined, res);
+  }
+  return id;
+}
+
+/**
+ * Dispatch an email to one or more existing mailing lists.
+ * Message can be either a new inline message OR a reference to a draft
+ * (useDraftId) created earlier with createMessage().
+ */
+export async function sendEmailToList(
+  creds: SendmsgCreds,
+  listIds: number[],
+  message: SendmsgMessage | { useDraftId: number },
+): Promise<Record<string, unknown>> {
+  const token = await getToken(creds);
+  const messageObj =
+    "useDraftId" in message
+      ? { UseDraftID: message.useDraftId }
+      : buildMessage(message);
+  const res = await postJson<Record<string, unknown>>(
+    "/SendEmailToMailingLists",
+    { Message: messageObj, MalingListIDs: listIds },
+    token,
+  );
+  return res;
+}
+
+/**
+ * High-level: send `m` to `listId` now, or schedule for a future Israel-local
+ * datetime. Returns the sendmsg message ID when available.
+ */
+export async function dispatchMessageToList(
+  creds: SendmsgCreds,
+  listId: number,
+  m: SendmsgMessage,
+  options?: { scheduledAtLocal?: string }, // "YYYY-MM-DDTHH:mm"
+): Promise<{ messageId: number | null; raw: unknown }> {
+  if (options?.scheduledAtLocal) {
+    const postpone = formatPostponeSendTime(options.scheduledAtLocal);
+    const messageId = await createMessage(creds, m, { postponeSendTime: postpone });
+    const raw = await sendEmailToList(creds, [listId], { useDraftId: messageId });
+    return { messageId, raw };
+  }
+  const raw = await sendEmailToList(creds, [listId], m);
+  const id =
+    (raw.newMessageID as number | undefined) ??
+    (raw.NewMessageID as number | undefined) ??
+    (raw.MessageID as number | undefined) ??
+    (raw.messageID as number | undefined) ??
+    null;
+  return { messageId: id, raw };
+}

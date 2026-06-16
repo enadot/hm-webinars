@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getTemplate } from "@/lib/templates";
-import { ExternalLink, Edit3, Users, Plus, Eye, EyeOff } from "lucide-react";
+import { ExternalLink, Edit3, Users, Plus, Eye, EyeOff, Mail } from "lucide-react";
 
 export const metadata = { title: "לוח ניהול וובינרים" };
 
@@ -96,6 +96,13 @@ export default async function AdminDashboard() {
                     >
                       <Users className="size-4" />
                       לידים
+                    </Link>
+                    <Link
+                      href={`/admin/${c.id}/emails`}
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold border border-slate-200 rounded-lg hover:bg-slate-50"
+                    >
+                      <Mail className="size-4" />
+                      מיילים
                     </Link>
                     <Link
                       href={`/admin/${c.id}/edit`}
