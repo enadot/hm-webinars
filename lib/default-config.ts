@@ -39,6 +39,7 @@ export function defaultCampaignConfig(): CampaignConfig {
     },
     footer: { phone: "", email: "", legal: "" },
     banner: { imageUrl: "", linkUrl: "", alt: "" },
+    integrations: { sendmsg: { enabled: true, listName: "" } },
     styleOverrides: {},
     theme: {
       primary: "#0B1437",

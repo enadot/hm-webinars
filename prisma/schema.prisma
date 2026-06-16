@@ -25,6 +25,14 @@ model Campaign {
   leads             Lead[]
 }
 
+// Global key/value app settings (e.g. third-party API credentials).
+// Stored as plaintext — DB access is admin-only; only read server-side.
+model AppSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model Lead {
   id          String   @id @default(cuid())
   campaignId  String

@@ -1,5 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { safeParseConfig } from "@/lib/campaign-schema";
+import { getSendmsgConfig } from "@/lib/app-settings";
+import {
+  addUserToList,
+  createMailingList,
+  SendmsgError,
+  type SendmsgCreds,
+} from "@/lib/sendmsg";
 
 const PHONE_RE = /^0\d{8,9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,11 +68,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "כתובת מייל לא תקינה" }, { status: 400 });
   }
 
-  let campaign = null as { id: string; slug: string; leadsWebhookUrl: string | null } | null;
+  let campaign = null as {
+    id: string;
+    slug: string;
+    name: string;
+    leadsWebhookUrl: string | null;
+    config: string;
+  } | null;
   if (campaignSlug) {
     campaign = await prisma.campaign.findUnique({
       where: { slug: campaignSlug },
-      select: { id: true, slug: true, leadsWebhookUrl: true },
+      select: { id: true, slug: true, name: true, leadsWebhookUrl: true, config: true },
     });
   }
 
@@ -111,5 +125,85 @@ export async function POST(request: Request) {
     console.log("[leads] (no webhook configured) new lead:", payload);
   }
 
+  // Auto-sync to שלח מסר mailing list (per-campaign, never fails the request).
+  if (campaign) {
+    syncLeadToSendmsg(campaign, {
+      name: cleanName,
+      phone: cleanPhone,
+      email: cleanEmail,
+    }).catch((err) => console.error("[leads] sendmsg sync error:", err));
+  }
+
   return NextResponse.json({ ok: true });
+}
+
+async function syncLeadToSendmsg(
+  campaign: { id: string; slug: string; name: string; config: string },
+  lead: { name: string; phone: string; email: string },
+): Promise<void> {
+  const creds = await getSendmsgConfig();
+  if (!creds) return; // not configured globally → silent no-op
+
+  const parsed = safeParseConfig(JSON.parse(campaign.config));
+  if (!parsed.ok) {
+    console.error("[leads] sendmsg: invalid campaign config", parsed.error);
+    return;
+  }
+  const sm = parsed.data.integrations?.sendmsg;
+  if (sm && sm.enabled === false) return; // opted out
+
+  const listName = (sm?.listName || "").trim() || campaign.name || campaign.slug;
+
+  let listId = sm?.listId;
+  if (!listId) {
+    try {
+      listId = await createMailingList(creds, listName, `Auto-created from /${campaign.slug}`);
+    } catch (e) {
+      logSendmsg("createMailingList", e);
+      return;
+    }
+    // Cache the listId on the campaign config so we don't recreate it.
+    const nextConfig = {
+      ...parsed.data,
+      integrations: {
+        ...(parsed.data.integrations ?? {}),
+        sendmsg: {
+          ...(parsed.data.integrations?.sendmsg ?? { enabled: true, listName: "" }),
+          listId,
+        },
+      },
+    };
+    try {
+      await prisma.campaign.update({
+        where: { id: campaign.id },
+        data: { config: JSON.stringify(nextConfig) },
+      });
+    } catch (e) {
+      console.error("[leads] sendmsg: failed to cache listId on campaign:", e);
+    }
+  }
+
+  // Split "first last" into FirstName / LastName (sendmsg has separate fields).
+  const space = lead.name.indexOf(" ");
+  const firstName = space === -1 ? lead.name : lead.name.slice(0, space);
+  const lastName = space === -1 ? "" : lead.name.slice(space + 1);
+
+  try {
+    await addUserToList(creds as SendmsgCreds, listId, {
+      email: lead.email,
+      firstName,
+      lastName,
+      phone: lead.phone,
+    });
+  } catch (e) {
+    logSendmsg("addUserToList", e);
+  }
+}
+
+function logSendmsg(op: string, e: unknown): void {
+  if (e instanceof SendmsgError) {
+    console.error(`[leads] sendmsg ${op} failed (${e.status ?? "?"}):`, e.message, e.body);
+  } else {
+    console.error(`[leads] sendmsg ${op} failed:`, e);
+  }
 }

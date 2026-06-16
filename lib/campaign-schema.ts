@@ -22,6 +22,18 @@ export const BulletSchema = z.object({
 });
 export type Bullet = z.infer<typeof BulletSchema>;
 
+export const SendmsgCampaignSchema = z.object({
+  enabled: z.boolean().default(true),
+  listName: z.string().default(""),
+  listId: z.number().int().optional(),
+});
+export type SendmsgCampaign = z.infer<typeof SendmsgCampaignSchema>;
+
+export const IntegrationsSchema = z.object({
+  sendmsg: SendmsgCampaignSchema.default(() => SendmsgCampaignSchema.parse({})),
+});
+export type Integrations = z.infer<typeof IntegrationsSchema>;
+
 export const BannerSchema = z.object({
   imageUrl: z.string().default(""),
   linkUrl: z.string().default(""),
@@ -127,6 +139,8 @@ export const CampaignConfigSchema = z.object({
   theme: ThemeSchema.default(() => ThemeSchema.parse({})),
   // Optional sponsor / promo banner shown before the lead form.
   banner: BannerSchema.default(() => BannerSchema.parse({})),
+  // Third-party integrations enabled per-campaign (global creds live in AppSetting).
+  integrations: IntegrationsSchema.default(() => IntegrationsSchema.parse({})),
   // Per-element / per-section color overrides, keyed by element path
   // ("hero.headline") or section key ("section:hero").
   styleOverrides: z.record(z.string(), StyleOverrideSchema).default({}),

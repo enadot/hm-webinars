@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Plus } from "lucide-react";
+import { LayoutDashboard, Plus, Settings } from "lucide-react";
 import { LogoutButton } from "./_components/logout-button";
 import { AdminFooter } from "../_components/admin-footer";
 
@@ -15,6 +15,14 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
             לוח ניהול וובינרים
           </Link>
           <nav className="flex items-center gap-3">
+            <Link
+              href="/admin/settings"
+              className="inline-flex items-center gap-2 px-3 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-bold text-sm"
+              title="הגדרות"
+            >
+              <Settings className="size-4" />
+              <span className="hidden sm:inline">הגדרות</span>
+            </Link>
             <Link
               href="/admin/new"
               className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg font-bold hover:brightness-110 transition text-sm"

@@ -126,6 +126,7 @@ const realEstateConfig: CampaignConfig = {
       "© 2026 כל הזכויות שמורות. אין באמור משום ייעוץ השקעות או תחליף לייעוץ פיננסי אישי.",
   },
   banner: { imageUrl: "", linkUrl: "", alt: "" },
+  integrations: { sendmsg: { enabled: true, listName: "" } },
   styleOverrides: {},
   theme: {
     primary: "#0B1437",

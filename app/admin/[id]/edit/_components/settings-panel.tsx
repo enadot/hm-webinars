@@ -16,6 +16,7 @@ import {
   BookOpen,
   Zap,
   Check,
+  Mail,
 } from "lucide-react";
 import { listTemplates } from "@/lib/templates";
 import type { CampaignDraft } from "./visual-editor";
@@ -190,6 +191,38 @@ export function SettingsPanel({ draft, onConfig, onPatch }: Props) {
             onChange={(v) => onPatch("leadsWebhookUrl", v)}
           />
         </CompactField>
+      </Section>
+
+      <Section title="שלח מסר" icon={<Mail className="size-4" />}>
+        <div className="flex items-center justify-between mb-2">
+          <Label className="text-xs font-bold">סנכרון לידים אוטומטי</Label>
+          <Toggle
+            checked={draft.config.integrations?.sendmsg?.enabled !== false}
+            onChange={(v) => onConfig("integrations.sendmsg.enabled", v)}
+          />
+        </div>
+        <CompactField
+          label="שם רשימת תפוצה"
+          hint={`ריק = שם הקמפיין ("${draft.name || "ללא שם"}").`}
+        >
+          <CompactInput
+            value={draft.config.integrations?.sendmsg?.listName || ""}
+            placeholder={draft.name || "שם הקמפיין"}
+            onChange={(v) => onConfig("integrations.sendmsg.listName", v)}
+          />
+        </CompactField>
+        {draft.config.integrations?.sendmsg?.listId ? (
+          <p className="text-[11px] text-slate-500 font-mono" dir="ltr">
+            list_id: {draft.config.integrations.sendmsg.listId}
+          </p>
+        ) : (
+          <p className="text-[11px] text-slate-500">
+            רשימה תיווצר אוטומטית בעת קליטת הליד הראשון.
+          </p>
+        )}
+        <p className="text-[11px] text-slate-500">
+          הגדרת אישורי החיבור ב-<a href="/admin/settings" className="text-brand-primary hover:underline">הגדרות</a>.
+        </p>
       </Section>
 
       <Section title="בולטים בטופס" icon={<Phone className="size-4" />}>
