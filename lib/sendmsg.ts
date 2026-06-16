@@ -49,20 +49,32 @@ async function postJson<T>(path: string, body: unknown, token?: string): Promise
   if (!res.ok) {
     throw new SendmsgError(`sendmsg ${path} HTTP ${res.status}`, res.status, parsed);
   }
-  // sendmsg often returns HTTP 200 with a Status field signalling a logical
-  // error (codes 410, 500, 530, etc. — see the API docs status-codes table).
+  // sendmsg returns HTTP 200 even on failure. The observed success shape is
+  // {"success": true, "res": true, "result": {...}, "data": {...}} — we treat
+  // an explicit `success === false` as an error and surface `ResultMessage`.
   if (parsed && typeof parsed === "object") {
     const rec = parsed as Record<string, unknown>;
-    const status = (rec.Status ?? rec.status) as number | string | undefined;
+    if (rec.success === false) {
+      const result = (rec.result ?? rec.Result) as Record<string, unknown> | undefined;
+      const msg = String(
+        result?.ResultMessage ?? rec.ResultMessage ?? "(no ResultMessage)",
+      );
+      throw new SendmsgError(
+        `sendmsg ${path} success=false: ${msg}`,
+        undefined,
+        parsed,
+      );
+    }
+    // Legacy / SMS-side fallback: explicit `Status` code per the docs table.
+    const status = rec.Status as number | string | undefined;
     if (status !== undefined) {
       const n = Number(status);
       if (Number.isFinite(n) && n !== 200 && n !== 10000) {
-        const msg = String(rec.ResultMessage ?? rec.resultMessage ?? "(no ResultMessage)");
-        throw new SendmsgError(
-          `sendmsg ${path} status ${n}: ${msg}`,
-          n,
-          parsed,
+        const result = (rec.result ?? rec.Result) as Record<string, unknown> | undefined;
+        const msg = String(
+          result?.ResultMessage ?? rec.ResultMessage ?? "(no ResultMessage)",
         );
+        throw new SendmsgError(`sendmsg ${path} status ${n}: ${msg}`, n, parsed);
       }
     }
   }
@@ -121,17 +133,28 @@ export async function testConnection(
 }
 
 function extractListId(res: Record<string, unknown>): number | null {
-  // The Apiary page doesn't pin down the success-response shape; cover the
-  // common variants AND the sendmsg pattern of returning the ID inside
-  // ResultMessage as a string.
+  // Observed shape: {"data": {"mailingLists": [341376]}, "result": {...}}.
+  const data = res.data as Record<string, unknown> | undefined;
+  if (data && Array.isArray(data.mailingLists) && data.mailingLists.length > 0) {
+    const first = data.mailingLists[0];
+    if (typeof first === "number") return first;
+    if (typeof first === "string" && /^\d+$/.test(first.trim())) return Number(first.trim());
+  }
+  // Fallback: pull the number out of ResultMessage's human-readable text.
+  const result = (res.result ?? res.Result) as Record<string, unknown> | undefined;
+  const rm = (result?.ResultMessage ?? res.ResultMessage ?? res.resultMessage) as
+    | string
+    | number
+    | undefined;
+  if (typeof rm === "string") {
+    const m = rm.match(/mailingList\s+created\s+IDs?:\s*(\d+)/i);
+    if (m) return Number(m[1]);
+  }
+  // Older / nested shape variants.
   const candidates: Array<unknown> = [
     res.NewListID, res.ListID, res.ListId, res.MailingListID, res.ID, res.id,
+    result?.NewListID, result?.ListID, result?.ListId, result?.ID, result?.id,
   ];
-  const nested = res.Result as Record<string, unknown> | undefined;
-  if (nested && typeof nested === "object") {
-    candidates.push(nested.NewListID, nested.ListID, nested.ListId, nested.ID, nested.id);
-  }
-  const rm = res.ResultMessage ?? res.resultMessage;
   if (typeof rm === "number") candidates.push(rm);
   if (typeof rm === "string" && /^\d+$/.test(rm.trim())) candidates.push(Number(rm.trim()));
   for (const c of candidates) {
