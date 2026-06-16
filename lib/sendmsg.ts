@@ -323,50 +323,66 @@ export async function createMessage(
 }
 
 /**
- * Dispatch an email to one or more existing mailing lists.
- * Message can be either a new inline message OR a reference to a draft
- * (useDraftId) created earlier with createMessage().
+ * POST /SendEmailToMailingLists — sends an inline Message to one or more
+ * existing mailing lists. Passing `postponeSendTime` schedules it for a
+ * future Asia/Jerusalem datetime (per the sendmsg PostponeSendTime field).
+ *
+ * The earlier draft-then-dispatch flow (CreateMessage → UseDraftID) returned
+ * "Object reference not set" from the sendmsg backend, so we send the full
+ * Message inline in a single call instead.
  */
 export async function sendEmailToList(
   creds: SendmsgCreds,
   listIds: number[],
-  message: SendmsgMessage | { useDraftId: number },
+  message: SendmsgMessage,
+  options?: { postponeSendTime?: string },
 ): Promise<Record<string, unknown>> {
   const token = await getToken(creds);
-  const messageObj =
-    "useDraftId" in message
-      ? { UseDraftID: message.useDraftId }
-      : buildMessage(message);
+  const messageObj = buildMessage(
+    message,
+    options?.postponeSendTime ? { PostponeSendTime: options.postponeSendTime } : undefined,
+  );
   const res = await postJson<Record<string, unknown>>(
     "/SendEmailToMailingLists",
     { Message: messageObj, MalingListIDs: listIds },
     token,
   );
+  console.log("[sendmsg] SendEmailToMailingLists raw:", JSON.stringify(res));
   return res;
+}
+
+function extractMessageId(res: Record<string, unknown>): number | null {
+  const data = res.data as Record<string, unknown> | undefined;
+  if (data) {
+    for (const key of ["messageID", "MessageID", "newMessageID", "NewMessageID", "messageId"]) {
+      const v = data[key];
+      if (typeof v === "number" && Number.isFinite(v)) return v;
+    }
+    if (Array.isArray(data.messages) && data.messages.length > 0) {
+      const first = data.messages[0];
+      if (typeof first === "number") return first;
+    }
+  }
+  for (const key of ["newMessageID", "NewMessageID", "MessageID", "messageID"]) {
+    const v = (res as Record<string, unknown>)[key];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+  }
+  return null;
 }
 
 /**
  * High-level: send `m` to `listId` now, or schedule for a future Israel-local
- * datetime. Returns the sendmsg message ID when available.
+ * datetime (a YYYY-MM-DDTHH:mm string).
  */
 export async function dispatchMessageToList(
   creds: SendmsgCreds,
   listId: number,
   m: SendmsgMessage,
-  options?: { scheduledAtLocal?: string }, // "YYYY-MM-DDTHH:mm"
+  options?: { scheduledAtLocal?: string },
 ): Promise<{ messageId: number | null; raw: unknown }> {
-  if (options?.scheduledAtLocal) {
-    const postpone = formatPostponeSendTime(options.scheduledAtLocal);
-    const messageId = await createMessage(creds, m, { postponeSendTime: postpone });
-    const raw = await sendEmailToList(creds, [listId], { useDraftId: messageId });
-    return { messageId, raw };
-  }
-  const raw = await sendEmailToList(creds, [listId], m);
-  const id =
-    (raw.newMessageID as number | undefined) ??
-    (raw.NewMessageID as number | undefined) ??
-    (raw.MessageID as number | undefined) ??
-    (raw.messageID as number | undefined) ??
-    null;
-  return { messageId: id, raw };
+  const postponeSendTime = options?.scheduledAtLocal
+    ? formatPostponeSendTime(options.scheduledAtLocal)
+    : undefined;
+  const raw = await sendEmailToList(creds, [listId], m, { postponeSendTime });
+  return { messageId: extractMessageId(raw), raw };
 }
