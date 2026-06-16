@@ -9,12 +9,42 @@ import { getSendmsgPublicStatus } from "@/lib/app-settings";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "מיילים | לוח ניהול" };
 
+function nowJerusalemLocal(): string {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Jerusalem",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const parts = Object.fromEntries(
+    fmt.formatToParts(new Date()).map((p) => [p.type, p.value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+}
+
 export default async function EmailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  // Reconcile any scheduled emails whose dispatch time has passed: sendmsg
+  // ran the dispatch on schedule (or failed silently — we have no API to
+  // verify), so we presume sent. scheduledAt is a literal Asia/Jerusalem
+  // "YYYY-MM-DDTHH:mm" string, lexical compare works.
+  await prisma.emailTemplate.updateMany({
+    where: {
+      campaignId: id,
+      status: "scheduled",
+      scheduledAt: { lte: nowJerusalemLocal() },
+    },
+    data: { status: "sent", sentAt: new Date() },
+  });
+
   const campaign = await prisma.campaign.findUnique({
     where: { id },
     include: {

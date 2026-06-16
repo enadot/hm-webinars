@@ -202,6 +202,24 @@ export async function getAllMailingLists(
   return await getJson<Record<string, unknown>>("/GetAllMalingLists", token);
 }
 
+/**
+ * GET /GetMsgFullStatistics — open/click/bounce stats for a sent message.
+ * The exact response shape isn't documented in Apiary; we return the raw
+ * body and let the UI render what's there.
+ */
+export async function getMessageStats(
+  creds: SendmsgCreds,
+  messageId: number,
+): Promise<Record<string, unknown>> {
+  const token = await getToken(creds);
+  const res = await getJson<Record<string, unknown>>(
+    `/GetMsgFullStatistics?messageID=${encodeURIComponent(String(messageId))}`,
+    token,
+  );
+  console.log("[sendmsg] GetMsgFullStatistics raw:", JSON.stringify(res));
+  return res;
+}
+
 export type SendmsgUser = {
   email: string;
   firstName?: string;

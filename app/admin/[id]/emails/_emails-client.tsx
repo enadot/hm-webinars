@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus,
@@ -18,6 +18,7 @@ import {
   EyeOff,
   X,
   Activity,
+  BarChart3,
 } from "lucide-react";
 
 export type EmailStatus = "draft" | "scheduled" | "sent" | "failed";
@@ -63,6 +64,7 @@ export function EmailsClient({
   const [busyId, setBusyId] = useState<string | null>(null);
   const [presetBusy, setPresetBusy] = useState(false);
   const [debugOpen, setDebugOpen] = useState(false);
+  const [statsFor, setStatsFor] = useState<EmailRow | null>(null);
   const [, startTransition] = useTransition();
 
   function refresh() {
@@ -219,6 +221,14 @@ export function EmailsClient({
         />
       )}
 
+      {statsFor && (
+        <EmailStatsDialog
+          campaignId={campaignId}
+          email={statsFor}
+          onClose={() => setStatsFor(null)}
+        />
+      )}
+
       {emails.length === 0 ? (
         <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-12 text-center">
           <Mail2 />
@@ -238,6 +248,7 @@ export function EmailsClient({
               onEdit={() => setEditing({ mode: "edit", email: e })}
               onDelete={() => removeEmail(e.id)}
               onSend={() => dispatch(e.id)}
+              onStats={() => setStatsFor(e)}
             />
           ))}
         </div>
@@ -261,6 +272,7 @@ function EmailRowCard({
   onEdit,
   onDelete,
   onSend,
+  onStats,
 }: {
   email: EmailRow;
   busy: boolean;
@@ -268,9 +280,11 @@ function EmailRowCard({
   onEdit: () => void;
   onDelete: () => void;
   onSend: () => void;
+  onStats: () => void;
 }) {
   const canEdit = email.status !== "sent";
   const canSend = email.status !== "sent" && sendmsgConfigured;
+  const canStats = email.status === "sent" && !!email.sendmsgMessageId;
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
       <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
@@ -282,6 +296,12 @@ function EmailRowCard({
               <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5">
                 <Calendar className="size-3" />
                 {formatDateTime(email.scheduledAt)}
+              </span>
+            )}
+            {email.status === "sent" && email.sentAt && (
+              <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-full px-2 py-0.5">
+                <Check className="size-3" />
+                {formatDateTimeFromIso(email.sentAt)}
               </span>
             )}
           </div>
@@ -305,22 +325,35 @@ function EmailRowCard({
             <Edit3 className="size-4" />
             <span className="hidden md:inline">עריכה</span>
           </button>
-          <button
-            type="button"
-            onClick={onSend}
-            disabled={!canSend || busy}
-            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold bg-brand-primary text-white rounded-lg hover:brightness-110 disabled:opacity-50"
-            title={email.scheduledAt ? "תזמן" : "שלח עכשיו"}
-          >
-            {busy ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : email.scheduledAt ? (
-              <Calendar className="size-4" />
-            ) : (
-              <Send className="size-4" />
-            )}
-            <span className="hidden md:inline">{email.scheduledAt ? "תזמן" : "שלח"}</span>
-          </button>
+          {canStats && (
+            <button
+              type="button"
+              onClick={onStats}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold border border-emerald-200 text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100"
+              title="סטטיסטיקות פתיחה / קליק / החזרות"
+            >
+              <BarChart3 className="size-4" />
+              <span className="hidden md:inline">סטטיסטיקות</span>
+            </button>
+          )}
+          {canSend && (
+            <button
+              type="button"
+              onClick={onSend}
+              disabled={busy}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-bold bg-brand-primary text-white rounded-lg hover:brightness-110 disabled:opacity-50"
+              title={email.scheduledAt ? "תזמן" : "שלח עכשיו"}
+            >
+              {busy ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : email.scheduledAt ? (
+                <Calendar className="size-4" />
+              ) : (
+                <Send className="size-4" />
+              )}
+              <span className="hidden md:inline">{email.scheduledAt ? "תזמן" : "שלח"}</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onDelete}
@@ -609,6 +642,18 @@ function formatDateTime(iso: string): string {
   return `${m[3]}/${m[2]}/${m[1]} ${m[4]}:${m[5]}`;
 }
 
+function formatDateTimeFromIso(isoUtc: string): string {
+  // Render an ISO timestamp in Asia/Jerusalem as DD/MM/YYYY HH:mm.
+  const d = new Date(isoUtc);
+  if (Number.isNaN(d.getTime())) return isoUtc;
+  const fmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Jerusalem",
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  });
+  return fmt.format(d).replace(",", "");
+}
+
 // ---------------- Debug dialog: sync round-trip ----------------
 
 type DebugStep = {
@@ -798,4 +843,170 @@ function SyncDebugDialog({
       </div>
     </div>
   );
+}
+
+// ---------------- Stats dialog ----------------
+
+const STAT_LABELS: Record<string, string> = {
+  Sent: "נשלח",
+  Delivered: "נמסר",
+  Opens: "פתיחות",
+  UniqueOpens: "פתיחות ייחודיות",
+  Clicks: "קליקים",
+  UniqueClicks: "קליקים ייחודיים",
+  Bounces: "החזרות",
+  HardBounces: "החזרות קשות",
+  SoftBounces: "החזרות רכות",
+  Unsubscribes: "הסרות",
+  Complaints: "תלונות",
+};
+
+function EmailStatsDialog({
+  campaignId,
+  email,
+  onClose,
+}: {
+  campaignId: string;
+  email: EmailRow;
+  onClose: () => void;
+}) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [raw, setRaw] = useState<unknown>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(
+          `/api/admin/campaigns/${campaignId}/emails/${email.id}/stats`,
+        );
+        const json = await res.json().catch(() => ({}));
+        if (cancelled) return;
+        if (!res.ok || !json?.ok) {
+          setError(json?.error || `HTTP ${res.status}`);
+        } else {
+          setRaw(json.stats);
+        }
+      } catch (e) {
+        if (!cancelled) setError(String(e));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [campaignId, email.id]);
+
+  const flat = flattenStats(raw);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-4 overflow-y-auto"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl max-w-2xl w-full my-8 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <div className="flex items-center gap-2 min-w-0">
+            <BarChart3 className="size-5 text-emerald-600" />
+            <h3 className="font-extrabold text-slate-900 truncate">סטטיסטיקות — {email.name}</h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="size-8 rounded-md hover:bg-slate-100 flex items-center justify-center text-slate-500"
+            aria-label="סגור"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          <div className="text-xs text-slate-500">
+            sendmsg messageID:{" "}
+            <span className="font-mono" dir="ltr">
+              {email.sendmsgMessageId ?? "—"}
+            </span>
+          </div>
+
+          {loading && (
+            <div className="flex items-center gap-2 text-sm text-slate-600">
+              <Loader2 className="size-4 animate-spin" />
+              טוען מ-שלח מסר…
+            </div>
+          )}
+
+          {error && (
+            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md px-3 py-2 flex items-start gap-2">
+              <AlertCircle className="size-4 shrink-0 mt-0.5" />
+              <span className="break-all">{error}</span>
+            </div>
+          )}
+
+          {!loading && !error && flat.length === 0 && (
+            <p className="text-sm text-slate-600">
+              ה-API לא החזיר שדות מספריים מזוהים. ה-JSON הגולמי מופיע למטה.
+            </p>
+          )}
+
+          {flat.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {flat.map((s) => (
+                <div
+                  key={s.key}
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+                >
+                  <div className="text-xs font-bold text-slate-500">
+                    {STAT_LABELS[s.key] ?? s.key}
+                  </div>
+                  <div className="text-2xl font-extrabold text-slate-900">{s.value}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {raw !== null && (
+            <details className="text-xs">
+              <summary className="cursor-pointer text-slate-600 font-bold">
+                תגובה מלאה (raw)
+              </summary>
+              <pre
+                dir="ltr"
+                className="mt-2 text-[11px] font-mono bg-slate-50 border border-slate-200 rounded p-2 overflow-x-auto max-h-72"
+              >
+                {JSON.stringify(raw, null, 2)}
+              </pre>
+            </details>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function flattenStats(raw: unknown): Array<{ key: string; value: number | string }> {
+  if (!raw || typeof raw !== "object") return [];
+  const out: Array<{ key: string; value: number | string }> = [];
+  const seen = new Set<string>();
+  const visit = (v: unknown) => {
+    if (!v || typeof v !== "object") return;
+    for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+      if (val !== null && typeof val === "object") {
+        visit(val);
+        continue;
+      }
+      if (typeof val === "number" && !seen.has(k)) {
+        seen.add(k);
+        out.push({ key: k, value: val });
+      }
+    }
+  };
+  visit(raw);
+  return out;
 }
