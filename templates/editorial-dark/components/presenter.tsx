@@ -24,7 +24,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
         <EditableText
           path="speakers.eyebrow"
           as="div"
-          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-sm tracking-[2px] text-[#7c828a] mb-4"
           placeholder="04 — תווית"
         />
         <div className="grid lg:grid-cols-2 gap-14 items-center">
@@ -32,26 +32,26 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
             <EditableText
               path="speakers.title"
               as="h2"
-              className="m-0 mb-2 font-medium text-[clamp(28px,3.6vw,46px)] tracking-[-0.8px] leading-[1.15]"
+              className="m-0 mb-2 font-medium text-[clamp(32px,4.2vw,56px)] tracking-[-0.8px] leading-[1.15]"
               placeholder="כותרת"
             />
             <EditableText
               path="speakers.list.0.name"
               as="div"
-              className="font-bold text-[clamp(20px,2.2vw,26px)] mt-[18px] mb-1"
+              className="font-bold text-[clamp(22px,2.5vw,30px)] mt-[18px] mb-1"
               placeholder="שם המרצה"
             />
             <EditableText
               path="speakers.list.0.role"
               as="div"
-              className="text-[#0052ff] font-semibold text-[15px] mb-5"
+              className="text-[#0052ff] font-semibold text-[17px] mb-5"
               placeholder="תפקיד"
             />
             <EditableText
               path="speakers.list.0.bio"
               as="p"
               multiline
-              className="m-0 mb-7 text-[#5b616e] text-base leading-[1.7] max-w-[56ch]"
+              className="m-0 mb-7 text-[#5b616e] text-[clamp(16px,1.7vw,20px)] leading-[1.7] max-w-[56ch]"
               placeholder="ביוגרפיה"
             />
 
@@ -85,7 +85,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
                     <EditableText
                       path={`editorial.stats.${i}.label`}
                       as="span"
-                      className="text-sm text-[#5b616e] mt-1.5"
+                      className="text-[15px] text-[#5b616e] mt-1.5"
                       placeholder="תיאור"
                     />
                   </div>
@@ -105,7 +105,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
             <EditableText
               path="editorial.presenterPunch"
               as="p"
-              className="m-0 mt-6 font-semibold text-base"
+              className="m-0 mt-6 font-semibold text-[clamp(16px,1.6vw,19px)]"
               placeholder="משפט מסכם"
               hideIfEmpty
             />
@@ -124,7 +124,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
                 />
               </div>
             </div>
-            <div className="absolute -bottom-4 -right-2.5 bg-[#0a0b0d] text-white rounded-2xl px-5 py-3.5 text-[13px] leading-[1.5] shadow-[0_12px_32px_rgba(0,0,0,0.25)] max-w-[230px]">
+            <div className="absolute -bottom-4 -right-2.5 bg-[#0a0b0d] text-white rounded-2xl px-5 py-3.5 text-[14.5px] leading-[1.55] shadow-[0_12px_32px_rgba(0,0,0,0.25)] max-w-[230px]">
               <EditableText
                 path="editorial.presenterBadgeLabel"
                 as="span"

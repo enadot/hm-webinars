@@ -23,13 +23,13 @@ export function EdFaq({ config }: { config: CampaignConfig }) {
         <EditableText
           path="editorial.faq.label"
           as="div"
-          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-sm tracking-[2px] text-[#7c828a] mb-4"
           placeholder="07 — תווית"
         />
         <EditableText
           path="editorial.faq.title"
           as="h2"
-          className="m-0 mb-10 font-medium text-[clamp(26px,3.4vw,42px)] tracking-[-0.7px]"
+          className="m-0 mb-10 font-medium text-[clamp(30px,4vw,52px)] tracking-[-0.7px]"
           placeholder="כותרת"
         />
         {items.map((_, i) => {
@@ -41,7 +41,7 @@ export function EdFaq({ config }: { config: CampaignConfig }) {
                 <button
                   type="button"
                   onClick={() => !editing && setOpen(open === i ? -1 : i)}
-                  className="flex justify-between items-center gap-4 w-full py-5 px-1 font-semibold text-[17px] text-[#0a0b0d] hover:text-[#0052ff] transition-colors text-start bg-transparent border-0 cursor-pointer font-heebo"
+                  className="flex justify-between items-center gap-4 w-full py-5 px-1 font-semibold text-[clamp(17px,1.8vw,22px)] text-[#0a0b0d] hover:text-[#0052ff] transition-colors text-start bg-transparent border-0 cursor-pointer font-heebo"
                 >
                   <EditableText path={`editorial.faq.items.${i}.q`} as="span" placeholder="שאלה" />
                   <span className="font-tam text-lg text-[#0052ff] flex-none" aria-hidden>
@@ -53,7 +53,7 @@ export function EdFaq({ config }: { config: CampaignConfig }) {
                     path={`editorial.faq.items.${i}.a`}
                     as="p"
                     multiline
-                    className="m-0 px-1 pb-6 text-[#5b616e] text-[15.5px] leading-[1.7] max-w-[60ch]"
+                    className="m-0 px-1 pb-6 text-[#5b616e] text-[clamp(16px,1.6vw,19px)] leading-[1.7] max-w-[60ch]"
                     placeholder="תשובה"
                   />
                 )}

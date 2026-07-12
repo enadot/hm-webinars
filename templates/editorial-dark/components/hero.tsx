@@ -5,31 +5,24 @@ import { EdCountdownStrip } from "./countdown";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 export function EdHero({ config }: { config: CampaignConfig }) {
-  const { hero, webinar, editorial } = config;
+  const { hero, webinar, brand, editorial } = config;
   const salaryRows = editorial?.salaryCard?.rows ?? [];
 
   return (
     <EditableSection sectionKey="hero" className="relative flex flex-col bg-[#0a0b0d] text-white">
       {/* Top bar */}
-      <div className="flex items-center justify-between w-full max-w-[1200px] mx-auto px-6 py-5">
-        <div className="flex items-baseline gap-2.5">
-          <EditableText
-            path="brand.name"
-            as="span"
-            className="font-bold text-[17px] tracking-tight"
-            placeholder="שם המותג"
-          />
-          <span className="w-px h-3.5 bg-white/25 inline-block translate-y-0.5" />
-          <EditableText
-            path="brand.tagline"
-            as="span"
-            className="font-tam text-[12px] text-[#a8acb3] tracking-widest"
-            placeholder="TAG"
-          />
-        </div>
+      <div className="flex items-center justify-between w-full max-w-[1200px] mx-auto px-6 py-6 md:py-7">
+        <EditableImage
+          path="brand.logoUrl"
+          alt={brand.name || "logo"}
+          className="h-10 md:h-14 w-auto object-contain"
+          placeholderClassName="h-12 w-48"
+          placeholderLabel="לוגו"
+          hideIfEmpty={false}
+        />
         <a
           href="#register"
-          className="bg-[#0052ff] hover:bg-[#003ecc] transition-colors text-white font-semibold text-sm px-5 py-2.5 rounded-full"
+          className="bg-[#0052ff] hover:bg-[#003ecc] transition-colors text-white font-semibold text-[15px] md:text-base px-6 py-3 rounded-full"
         >
           <EditableText path="editorial.topbarCta" as="span" placeholder="CTA עליון" />
         </a>
@@ -39,11 +32,11 @@ export function EdHero({ config }: { config: CampaignConfig }) {
       <div className="flex-1 grid lg:grid-cols-2 gap-12 items-center w-full max-w-[1200px] mx-auto px-6 pt-8 pb-16 lg:pb-20">
         {/* Copy */}
         <div className="flex flex-col items-start gap-6 max-w-[620px]">
-          <div className="flex items-center gap-2 border border-white/15 rounded-full px-4 py-2 font-tam text-[11.5px] tracking-wide text-[#a8acb3]">
+          <div className="flex items-center gap-2.5 border border-white/15 rounded-full px-5 py-2.5 font-tam text-[13px] md:text-sm tracking-wide text-[#a8acb3]">
             <span className="size-[7px] rounded-full bg-[#0052ff] inline-block shrink-0" />
             <EditableText path="hero.eyebrow" as="span" placeholder="באדג' עליון" />
           </div>
-          <h1 className="m-0 font-medium text-[clamp(34px,5.2vw,64px)] leading-[1.12] tracking-[-1px] [text-wrap:pretty]">
+          <h1 className="m-0 font-medium text-[clamp(40px,5.8vw,84px)] leading-[1.08] tracking-[-1.2px] [text-wrap:pretty]">
             <EditableText path="hero.headline" as="span" multiline placeholder="כותרת ראשית" />{" "}
             <EditableText
               path="hero.headlineAccent"
@@ -58,19 +51,19 @@ export function EdHero({ config }: { config: CampaignConfig }) {
             path="hero.description"
             as="p"
             multiline
-            className="m-0 text-[clamp(16px,1.5vw,19px)] leading-[1.65] text-[#a8acb3] max-w-[54ch] [text-wrap:pretty]"
+            className="m-0 text-[clamp(17px,1.8vw,22px)] leading-[1.65] text-[#a8acb3] max-w-[54ch] [text-wrap:pretty]"
             placeholder="פסקת תיאור"
           />
           <div className="flex flex-col items-start gap-3">
             <a
               href="#register"
-              className="bg-[#0052ff] hover:bg-[#003ecc] transition-colors text-white font-semibold text-[17px] px-8 py-4 rounded-full inline-flex items-center gap-2.5"
+              className="bg-[#0052ff] hover:bg-[#003ecc] hover:-translate-y-0.5 transition-all text-white font-bold text-lg md:text-xl px-9 py-[18px] rounded-full inline-flex items-center gap-2.5 shadow-[0_12px_40px_rgba(0,82,255,0.35)]"
             >
               <EditableText path="hero.ctaText" as="span" placeholder="טקסט כפתור" />
               <span className="font-tam">&#8592;</span>
             </a>
             {webinar.spotsLimited && (
-              <div className="text-[13px] text-[#7c828a]">
+              <div className="text-[14.5px] md:text-[15px] text-[#7c828a]">
                 מספר המקומות מוגבל · ההרשמה אורכת פחות מדקה
               </div>
             )}
@@ -78,7 +71,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
           <EditableText
             path="webinar.dateLabel"
             as="div"
-            className="font-tam text-[12.5px] text-[#a8acb3] border-t border-white/10 pt-4 mt-1.5 w-full"
+            className="font-tam text-[14px] md:text-[15px] text-[#a8acb3] border-t border-white/10 pt-4 mt-1.5 w-full"
             placeholder="פרטי מועד הוובינר"
           />
         </div>
@@ -101,13 +94,13 @@ export function EdHero({ config }: { config: CampaignConfig }) {
               <EditableText
                 path="speakers.list.0.name"
                 as="span"
-                className="font-bold text-[19px]"
+                className="font-bold text-[21px] md:text-[23px]"
                 placeholder="שם המרצה"
               />
               <EditableText
                 path="speakers.list.0.role"
                 as="span"
-                className="text-[13px] text-[#a8acb3]"
+                className="text-[14.5px] text-[#a8acb3]"
                 placeholder="תפקיד"
               />
             </div>

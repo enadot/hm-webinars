@@ -20,10 +20,10 @@ export function EdAi({ config }: { config: CampaignConfig }) {
         <EditableText
           path="editorial.ai.label"
           as="div"
-          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-sm tracking-[2px] text-[#7c828a] mb-4"
           placeholder="03 — תווית"
         />
-        <h2 className="m-0 mb-7 font-medium text-[clamp(32px,5vw,66px)] leading-[1.1] tracking-[-1.2px] max-w-[18ch] [text-wrap:pretty]">
+        <h2 className="m-0 mb-7 font-medium text-[clamp(36px,5.6vw,78px)] leading-[1.1] tracking-[-1.2px] max-w-[18ch] [text-wrap:pretty]">
           <EditableText
             path="editorial.ai.titleAccent"
             as="span"
@@ -36,7 +36,7 @@ export function EdAi({ config }: { config: CampaignConfig }) {
           <EditableText path="editorial.ai.title2" as="span" placeholder="שורה שנייה" hideIfEmpty />
         </h2>
         <div className="grid lg:grid-cols-2 gap-12 items-start mt-10">
-          <div className="text-[clamp(17px,1.8vw,21px)] leading-[1.7] text-[#a8acb3] max-w-[44ch]">
+          <div className="text-[clamp(18px,2vw,24px)] leading-[1.7] text-[#a8acb3] max-w-[44ch]">
             <EditableText
               path="editorial.ai.body1"
               as="p"
@@ -72,13 +72,13 @@ export function EdAi({ config }: { config: CampaignConfig }) {
                     <EditableText
                       path={`editorial.ai.cards.${i}.tag`}
                       as="div"
-                      className={`font-tam text-[10.5px] tracking-[1.5px] mb-2.5 ${TAG_COLORS[i % TAG_COLORS.length]}`}
+                      className={`font-tam text-[12px] tracking-[1.5px] mb-2.5 ${TAG_COLORS[i % TAG_COLORS.length]}`}
                       placeholder="תגית"
                     />
                     <EditableText
                       path={`editorial.ai.cards.${i}.text`}
                       as="div"
-                      className="font-semibold text-[15px] leading-[1.45]"
+                      className="font-semibold text-[17px] leading-[1.5]"
                       placeholder="תוכן"
                     />
                   </div>

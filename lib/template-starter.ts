@@ -17,7 +17,11 @@ export function starterConfigFor(templateId: string): CampaignConfig {
       description:
         "לפני שאתם בוחרים מה ללמוד — בואו להבין איך ייראה שוק העבודה שאליו אתם נכנסים. וובינר חינמי עם יהונתן ארוך, מנכ\"ל רשת המכללות יסודות וקבוצת ACG.",
     },
-    brand: { logoUrl: "", name: "יסודות", tagline: "ACG" },
+    brand: {
+      logoUrl: "/templates/editorial-dark/logo.svg",
+      name: "יסודות",
+      tagline: "ACG",
+    },
     hero: {
       eyebrow: "וובינר מיוחד | שוק העבודה, לימודים, שכר ו־AI",
       eyebrowLogoUrl: "",

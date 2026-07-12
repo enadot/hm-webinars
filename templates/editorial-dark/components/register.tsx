@@ -16,7 +16,7 @@ const PHONE_RE = /^0\d{8,9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const inputClass =
-  "bg-[#0a0b0d] border border-white/[0.14] focus:border-[#0052ff] rounded-xl px-4 py-3.5 text-base text-white font-heebo outline-none w-full box-border placeholder:text-[#7c828a] transition-colors";
+  "bg-[#0a0b0d] border border-white/[0.14] focus:border-[#0052ff] rounded-xl px-4 py-4 text-[17px] text-white font-heebo outline-none w-full box-border placeholder:text-[#7c828a] transition-colors";
 
 export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: string }) {
   const router = useRouter();
@@ -80,7 +80,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
     >
       <div className="max-w-[1200px] mx-auto px-6 grid lg:grid-cols-2 gap-14 items-center">
         <div>
-          <h2 className="m-0 mb-5 font-medium text-[clamp(30px,4.2vw,54px)] leading-[1.14] tracking-[-1px] [text-wrap:pretty]">
+          <h2 className="m-0 mb-5 font-medium text-[clamp(34px,4.8vw,64px)] leading-[1.14] tracking-[-1px] [text-wrap:pretty]">
             <EditableText path="form.title" as="span" multiline placeholder="כותרת" />
             <br />
             <EditableText
@@ -95,7 +95,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
             path="form.description"
             as="p"
             multiline
-            className="m-0 mb-[18px] text-[#a8acb3] text-[17px] leading-[1.7] max-w-[50ch]"
+            className="m-0 mb-[18px] text-[#a8acb3] text-[clamp(17px,1.8vw,22px)] leading-[1.7] max-w-[50ch]"
             placeholder="תיאור"
             hideIfEmpty
           />
@@ -112,7 +112,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
             <EditableText
               path="form.cardTitle"
               as="div"
-              className="font-bold text-[21px]"
+              className="font-bold text-[24px]"
               placeholder="כותרת כרטיס"
             />
             <EditableText
@@ -125,7 +125,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
 
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <label htmlFor="ed-name" className="text-[13.5px] font-semibold text-[#e6e8eb]">
+                <label htmlFor="ed-name" className="text-[15px] font-semibold text-[#e6e8eb]">
                   שם מלא
                 </label>
                 <input
@@ -143,7 +143,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="ed-phone" className="text-[13.5px] font-semibold text-[#e6e8eb]">
+                <label htmlFor="ed-phone" className="text-[15px] font-semibold text-[#e6e8eb]">
                   טלפון נייד
                 </label>
                 <input
@@ -166,7 +166,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
               </div>
 
               <div className="flex flex-col gap-2">
-                <label htmlFor="ed-email" className="text-[13.5px] font-semibold text-[#e6e8eb]">
+                <label htmlFor="ed-email" className="text-[15px] font-semibold text-[#e6e8eb]">
                   מייל
                 </label>
                 <input
@@ -196,7 +196,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
               <button
                 type="submit"
                 disabled={submitting || editing}
-                className="bg-[#0052ff] hover:bg-[#003ecc] active:scale-[0.99] transition-all text-white border-0 cursor-pointer font-heebo font-bold text-[17px] px-6 py-4 rounded-full w-full flex items-center justify-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="bg-[#0052ff] hover:bg-[#003ecc] active:scale-[0.99] transition-all text-white border-0 cursor-pointer font-heebo font-bold text-lg px-6 py-[18px] rounded-full w-full flex items-center justify-center gap-2.5 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {submitting ? (
                   <>
