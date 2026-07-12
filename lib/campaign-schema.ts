@@ -138,6 +138,9 @@ export const EditorialSchema = z.object({
   limitedText: z.string().default("מספר המקומות מוגבל"),
   // Hebrew calendar date shown alongside the Gregorian date (e.g. י״ב אב תשפ״ו).
   hebrewDate: z.string().default(""),
+  // Exit-intent registration popup copy.
+  popupTitle: z.string().default(""),
+  popupBody: z.string().default(""),
   faq: z
     .object({
       label: z.string().default(""),

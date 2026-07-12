@@ -227,6 +227,9 @@ export function starterConfigFor(templateId: string): CampaignConfig {
       registerLabel: "הרשמה",
       limitedText: "מספר המקומות מוגבל",
       hebrewDate: "י״ב אב תשפ״ו",
+      popupTitle: "רגע, לפני שאתם יוצאים —",
+      popupBody:
+        "ההשתתפות בוובינר בחינם, וההרשמה לוקחת פחות מדקה. שריינו מקום עכשיו — מספר המקומות מוגבל.",
       faq: {
         label: "07 — שאלות נפוצות",
         title: "רגע לפני שנרשמים",

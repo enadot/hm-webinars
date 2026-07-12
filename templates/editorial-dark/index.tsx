@@ -10,6 +10,7 @@ import { EdRegister } from "./components/register";
 import { EdFaq } from "./components/faq";
 import { EdFinal } from "./components/final";
 import { EdStickyCta } from "./components/sticky-cta";
+import { EdExitPopup } from "./components/exit-popup";
 import { EditableBanner } from "@/components/editable/banner";
 
 export function EditorialDarkTemplate({ config, slug }: { config: CampaignConfig; slug?: string }) {
@@ -27,6 +28,7 @@ export function EditorialDarkTemplate({ config, slug }: { config: CampaignConfig
       <EdFaq config={config} />
       <EdFinal config={config} />
       <EdStickyCta />
+      <EdExitPopup config={config} slug={slug} />
     </main>
   );
 }

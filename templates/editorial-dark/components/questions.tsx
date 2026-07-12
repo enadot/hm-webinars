@@ -157,7 +157,7 @@ export function EdQuestions({ config }: { config: CampaignConfig }) {
           </p>
           <a
             href="#register"
-            className="shrink-0 self-start md:self-auto bg-[#0052ff] hover:bg-[#003ecc] hover:-translate-y-0.5 transition-all text-white font-bold text-[17px] md:text-lg px-8 py-4 rounded-full inline-flex items-center gap-2.5 shadow-[0_12px_40px_rgba(0,82,255,0.35)]"
+            className="shrink-0 self-start md:self-auto bg-[#0052ff] hover:bg-[#003ecc] hover:-translate-y-0.5 transition-all text-white font-bold text-[15px] sm:text-[17px] md:text-lg px-6 sm:px-8 py-4 rounded-full inline-flex items-center gap-2.5 whitespace-nowrap shadow-[0_12px_40px_rgba(0,82,255,0.35)]"
           >
             <EditableText path="editorial.questions.cta" as="span" placeholder="טקסט כפתור" />
             <span aria-hidden>&#8592;</span>

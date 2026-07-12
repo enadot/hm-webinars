@@ -30,7 +30,7 @@ export function EdFinal({ config }: { config: CampaignConfig }) {
         />
         <a
           href="#register"
-          className="bg-[#0052ff] hover:bg-[#003ecc] transition-colors text-white font-bold text-xl px-11 py-[19px] rounded-full inline-flex items-center gap-2.5"
+          className="bg-[#0052ff] hover:bg-[#003ecc] hover:-translate-y-0.5 transition-all text-white font-bold text-[16px] sm:text-lg md:text-xl px-7 sm:px-11 py-[19px] rounded-full inline-flex items-center gap-2.5 whitespace-nowrap shadow-[0_12px_40px_rgba(0,82,255,0.35)]"
         >
           <EditableText path="hero.ctaText" as="span" placeholder="טקסט כפתור" />
           <span aria-hidden>&#8592;</span>
