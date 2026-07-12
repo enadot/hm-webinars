@@ -18,6 +18,7 @@ import {
   Check,
   Mail,
   TrendingUp,
+  Newspaper,
 } from "lucide-react";
 import { listTemplates } from "@/lib/templates";
 import type { CampaignDraft } from "./visual-editor";
@@ -33,6 +34,7 @@ const TEMPLATE_ICONS: Record<string, React.ReactNode> = {
   editorial: <BookOpen className="size-5" />,
   energetic: <Zap className="size-5" />,
   wealth: <TrendingUp className="size-5" />,
+  "editorial-dark": <Newspaper className="size-5" />,
 };
 
 const TEMPLATE_GRADIENTS: Record<string, string> = {
@@ -40,6 +42,7 @@ const TEMPLATE_GRADIENTS: Record<string, string> = {
   editorial: "from-stone-700 to-stone-900",
   energetic: "from-fuchsia-500 via-pink-500 to-amber-400",
   wealth: "from-brand-forest via-emerald-700 to-brand-emerald",
+  "editorial-dark": "from-[#0a0b0d] via-[#16181c] to-[#0052ff]",
 };
 
 export function SettingsPanel({ draft, onConfig, onPatch }: Props) {

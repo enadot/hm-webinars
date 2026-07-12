@@ -5,6 +5,8 @@ const config: Config = {
   content: [
     "./app/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
+    "./templates/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
   ],
   theme: {
     container: {
@@ -18,6 +20,8 @@ const config: Config = {
       fontFamily: {
         sans: ['"Google Sans"', '"Heebo"', "system-ui", "sans-serif"],
         display: ['"Google Sans"', '"Heebo"', "system-ui", "sans-serif"],
+        heebo: ['"Heebo"', "system-ui", "sans-serif"],
+        mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       fontSize: {
         // Larger base sizes for impactful Hebrew typography
@@ -118,6 +122,14 @@ const config: Config = {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "marquee-rtl": {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(50%)" },
+        },
+        "float-y": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -126,6 +138,10 @@ const config: Config = {
         "blob": "blob 14s ease-in-out infinite",
         "blob-slow": "blob 22s ease-in-out infinite",
         "shimmer": "shimmer 3s linear infinite",
+        "marquee-rtl": "marquee-rtl 36s linear infinite",
+        "float-y": "float-y 7s ease-in-out infinite",
+        "float-y-slow": "float-y 8s ease-in-out 1.2s infinite",
+        "float-y-fast": "float-y 6s ease-in-out 0.6s infinite",
       },
     },
   },

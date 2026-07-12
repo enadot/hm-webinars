@@ -41,6 +41,122 @@ export const BannerSchema = z.object({
 });
 export type Banner = z.infer<typeof BannerSchema>;
 
+// Content for the "editorial-dark" template's design-specific sections
+// (typographic questions field, AI cards, audience cards, open Q&A, FAQ).
+// Optional + fully defaulted so other templates/campaigns are unaffected.
+export const EditorialSchema = z.object({
+  topbarCta: z.string().default("שמרו לי מקום"),
+  salaryCard: z
+    .object({
+      title: z.string().default(""),
+      rows: z
+        .array(z.object({ label: z.string().default(""), value: z.string().default("") }))
+        .default([]),
+    })
+    .default(() => ({ title: "", rows: [] })),
+  heroChipMono: z.string().default(""),
+  heroChipText: z.string().default(""),
+  heroPill: z.string().default(""),
+  questions: z
+    .object({
+      label: z.string().default(""),
+      title: z.string().default(""),
+      strike: z.string().default(""),
+      items: z.array(z.string()).default([]),
+      marquee: z.array(z.string()).default([]),
+      closing: z.string().default(""),
+      closingAccent: z.string().default(""),
+      cta: z.string().default(""),
+    })
+    .default(() => ({
+      label: "",
+      title: "",
+      strike: "",
+      items: [],
+      marquee: [],
+      closing: "",
+      closingAccent: "",
+      cta: "",
+    })),
+  getFootnote: z.string().default(""),
+  ai: z
+    .object({
+      label: z.string().default(""),
+      titleAccent: z.string().default(""),
+      title: z.string().default(""),
+      title2: z.string().default(""),
+      body1: z.string().default(""),
+      body2: z.string().default(""),
+      body3: z.string().default(""),
+      cards: z
+        .array(z.object({ tag: z.string().default(""), text: z.string().default("") }))
+        .default([]),
+    })
+    .default(() => ({
+      label: "",
+      titleAccent: "",
+      title: "",
+      title2: "",
+      body1: "",
+      body2: "",
+      body3: "",
+      cards: [],
+    })),
+  stats: z
+    .array(
+      z.object({
+        value: z.string().default(""),
+        suffix: z.string().default(""),
+        label: z.string().default(""),
+      })
+    )
+    .default([]),
+  presenterPunch: z.string().default(""),
+  presenterBadgeLabel: z.string().default("EXPERIENCE"),
+  presenterBadge: z.string().default(""),
+  audience: z
+    .object({
+      label: z.string().default(""),
+      title: z.string().default(""),
+      cards: z
+        .array(z.object({ quote: z.string().default(""), note: z.string().default("") }))
+        .default([]),
+      chips: z.array(z.string()).default([]),
+    })
+    .default(() => ({ label: "", title: "", cards: [], chips: [] })),
+  qa: z
+    .object({
+      label: z.string().default(""),
+      title: z.string().default(""),
+      titleAccent: z.string().default(""),
+      body: z.string().default(""),
+      punch: z.string().default(""),
+      bubbles: z.array(z.string()).default([]),
+    })
+    .default(() => ({ label: "", title: "", titleAccent: "", body: "", punch: "", bubbles: [] })),
+  registerLabel: z.string().default(""),
+  limitedText: z.string().default("מספר המקומות מוגבל"),
+  faq: z
+    .object({
+      label: z.string().default(""),
+      title: z.string().default(""),
+      items: z
+        .array(z.object({ q: z.string().default(""), a: z.string().default("") }))
+        .default([]),
+    })
+    .default(() => ({ label: "", title: "", items: [] })),
+  final: z
+    .object({
+      title: z.string().default(""),
+      titleAccent: z.string().default(""),
+      body: z.string().default(""),
+      note: z.string().default(""),
+      footerMono: z.string().default(""),
+    })
+    .default(() => ({ title: "", titleAccent: "", body: "", note: "", footerMono: "" })),
+});
+export type Editorial = z.infer<typeof EditorialSchema>;
+
 export const StyleOverrideSchema = z.object({
   color: z.string().optional(),
   backgroundColor: z.string().optional(),
@@ -137,6 +253,8 @@ export const CampaignConfigSchema = z.object({
     legal: z.string().default(""),
   }),
   theme: ThemeSchema.default(() => ThemeSchema.parse({})),
+  // Design-specific content used by the "editorial-dark" template only.
+  editorial: EditorialSchema.optional(),
   // Optional sponsor / promo banner shown before the lead form.
   banner: BannerSchema.default(() => BannerSchema.parse({})),
   // Third-party integrations enabled per-campaign (global creds live in AppSetting).

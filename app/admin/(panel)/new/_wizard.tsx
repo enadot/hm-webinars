@@ -6,15 +6,16 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Sparkles, BookOpen, Zap, Check, TrendingUp } from "lucide-react";
+import { ArrowLeft, Loader2, Sparkles, BookOpen, Zap, Check, TrendingUp, Newspaper } from "lucide-react";
 import { listTemplates } from "@/lib/templates";
-import { defaultCampaignConfig } from "@/lib/default-config";
+import { starterConfigFor } from "@/lib/template-starter";
 
 const TEMPLATE_ICONS: Record<string, React.ReactNode> = {
   "bold-hero": <Sparkles className="size-6" />,
   editorial: <BookOpen className="size-6" />,
   energetic: <Zap className="size-6" />,
   wealth: <TrendingUp className="size-6" />,
+  "editorial-dark": <Newspaper className="size-6" />,
 };
 
 const TEMPLATE_GRADIENTS: Record<string, string> = {
@@ -22,6 +23,7 @@ const TEMPLATE_GRADIENTS: Record<string, string> = {
   editorial: "from-stone-700 to-stone-900",
   energetic: "from-fuchsia-500 via-pink-500 to-amber-400",
   wealth: "from-brand-forest via-emerald-700 to-brand-emerald",
+  "editorial-dark": "from-[#0a0b0d] via-[#16181c] to-[#0052ff]",
 };
 
 function slugify(input: string): string {
@@ -66,7 +68,7 @@ export function NewCampaignWizard() {
         templateId,
         published: false,
         leadsWebhookUrl: "",
-        config: defaultCampaignConfig(),
+        config: starterConfigFor(templateId),
       }),
     });
     const json = await res.json().catch(() => ({}));

@@ -3,9 +3,10 @@ import { BoldHeroTemplate } from "@/templates/bold-hero";
 import { EditorialTemplate } from "@/templates/editorial";
 import { EnergeticTemplate } from "@/templates/energetic";
 import { WealthTemplate } from "@/templates/wealth";
+import { EditorialDarkTemplate } from "@/templates/editorial-dark";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
-export type TemplateId = "bold-hero" | "editorial" | "energetic" | "wealth";
+export type TemplateId = "bold-hero" | "editorial" | "energetic" | "wealth" | "editorial-dark";
 
 export type TemplateProps = { config: CampaignConfig; slug?: string };
 export type TemplateComponent = (props: TemplateProps) => ReactNode;
@@ -50,6 +51,14 @@ export const TEMPLATES: Record<TemplateId, TemplateMeta> = {
       "ירוק אמרלד עמוק עם גרף צמיחה, זכוכית וטיפוגרפיה יוקרתית. מתאים לוובינרים בתחום ההשקעות, פיננסים וצמיחה כלכלית.",
     preview: "/templates/wealth.png",
     Component: WealthTemplate,
+  },
+  "editorial-dark": {
+    id: "editorial-dark",
+    name: "Editorial Dark",
+    description:
+      "כהה עיתונאי-מודרני: טיפוגרפיה מדויקת, מונו-ספייס, סקציות ממוספרות, כרטיסי AI, שו\"ת ו-FAQ. נבנה לוובינר קריירה/לימודים ומגיע עם תוכן מלא מוכן לעריכה.",
+    preview: "/templates/editorial-dark.png",
+    Component: EditorialDarkTemplate,
   },
 };
 
