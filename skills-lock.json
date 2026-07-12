@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "audit": {
+      "source": "AccessLint/claude-marketplace",
+      "sourceType": "github",
+      "skillPath": "plugins/accesslint/skills/audit/SKILL.md",
+      "computedHash": "967363bdc3d2d46fe2ca1ff14e91dd2525cd41573dc1ceee644d5f91226cd117"
+    }
+  }
+}
