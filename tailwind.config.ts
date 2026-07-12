@@ -71,6 +71,13 @@ const config: Config = {
           // Near-black for text
           dark: "#0A0E27",
           ink: "#1A1F3D",
+          // Wealth template - deep forest greens + emerald accents
+          forest: "#052E22",
+          "forest-2": "#0B4A36",
+          emerald: "#10B981",
+          "emerald-light": "#34D399",
+          mint: "#A7F3D0",
+          champagne: "#E3D3A3",
         },
       },
       borderRadius: {
@@ -85,6 +92,9 @@ const config: Config = {
         "glow-purple": "0 20px 60px -10px rgba(124, 58, 237, 0.55)",
         "glow-brand": "0 25px 80px -15px rgba(11, 20, 55, 0.65)",
         "card-lift": "0 30px 80px -20px rgba(11, 20, 55, 0.25)",
+        "glow-emerald": "0 20px 60px -10px rgba(16, 185, 129, 0.45)",
+        "glow-forest": "0 25px 80px -15px rgba(5, 46, 34, 0.65)",
+        "card-lift-green": "0 30px 80px -20px rgba(5, 46, 34, 0.25)",
       },
       keyframes: {
         "accordion-down": {

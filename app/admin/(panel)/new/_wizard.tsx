@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft, Loader2, Sparkles, BookOpen, Zap, Check } from "lucide-react";
+import { ArrowLeft, Loader2, Sparkles, BookOpen, Zap, Check, TrendingUp } from "lucide-react";
 import { listTemplates } from "@/lib/templates";
 import { defaultCampaignConfig } from "@/lib/default-config";
 
@@ -14,12 +14,14 @@ const TEMPLATE_ICONS: Record<string, React.ReactNode> = {
   "bold-hero": <Sparkles className="size-6" />,
   editorial: <BookOpen className="size-6" />,
   energetic: <Zap className="size-6" />,
+  wealth: <TrendingUp className="size-6" />,
 };
 
 const TEMPLATE_GRADIENTS: Record<string, string> = {
   "bold-hero": "from-brand-primary via-brand-purple to-brand-coral",
   editorial: "from-stone-700 to-stone-900",
   energetic: "from-fuchsia-500 via-pink-500 to-amber-400",
+  wealth: "from-brand-forest via-emerald-700 to-brand-emerald",
 };
 
 function slugify(input: string): string {
@@ -122,7 +124,7 @@ export function NewCampaignWizard() {
 
         <div className="space-y-3">
           <Label className="text-base font-bold">בחרו עיצוב</Label>
-          <div className="grid sm:grid-cols-3 gap-3">
+          <div className="grid sm:grid-cols-2 gap-3">
             {listTemplates().map((t) => {
               const selected = templateId === t.id;
               return (

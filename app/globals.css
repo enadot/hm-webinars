@@ -97,6 +97,25 @@
     background-clip: text;
     color: transparent;
   }
+  .bg-mesh-wealth {
+    background:
+      radial-gradient(at 85% 0%, #0E5C42 0px, transparent 55%),
+      radial-gradient(at 0% 25%, #063D2C 0px, transparent 50%),
+      radial-gradient(at 100% 100%, #0B4A36 0px, transparent 50%),
+      linear-gradient(160deg, #04241A 0%, #052E22 55%, #07382A 100%);
+  }
+  .text-gradient-emerald {
+    background: linear-gradient(135deg, #A7F3D0 0%, #34D399 45%, #10B981 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .text-gradient-champagne {
+    background: linear-gradient(135deg, #F3E9C6 0%, #E3D3A3 50%, #C9B478 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
   .shimmer-bg {
     background: linear-gradient(
       90deg,

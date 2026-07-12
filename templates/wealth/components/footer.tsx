@@ -1,0 +1,20 @@
+import { EditableText } from "@/components/editable/text";
+import { EditableSection } from "@/components/editable/section";
+import type { CampaignConfig } from "@/lib/campaign-schema";
+
+export function WealthFooter({ config }: { config: CampaignConfig }) {
+  void config;
+  return (
+    <EditableSection as="footer" sectionKey="footer" className="bg-brand-forest text-white/50 py-10">
+      <div className="container mx-auto px-4">
+        <EditableText
+          path="footer.legal"
+          as="div"
+          multiline
+          className="text-sm text-center leading-relaxed max-w-3xl mx-auto"
+          placeholder="© 2026 כל הזכויות שמורות. אין באמור משום ייעוץ השקעות או תחליף לייעוץ פיננסי אישי."
+        />
+      </div>
+    </EditableSection>
+  );
+}

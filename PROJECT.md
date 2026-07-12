@@ -1,6 +1,6 @@
 # מערכת ניהול דפי נחיתה לוובינרים
 
-מערכת קלת-משקל לניהול ויצירת דפי נחיתה לוובינרים של לקוחות, עם עורך ויזואלי inline ו-3 תבניות עיצוב.
+מערכת קלת-משקל לניהול ויצירת דפי נחיתה לוובינרים של לקוחות, עם עורך ויזואלי inline ו-4 תבניות עיצוב.
 
 ---
 
@@ -76,9 +76,21 @@ hm-webinars/
 │   │   ├── index.tsx
 │   │   └── components/lead-form.tsx
 │   │
-│   └── energetic/              # תבנית תוססת (טרם רופקטרה לעריכה inline)
+│   ├── energetic/              # תבנית תוססת (טרם רופקטרה לעריכה inline)
+│   │   ├── index.tsx
+│   │   └── components/lead-form.tsx
+│   │
+│   └── wealth/                 # תבנית השקעות ירוקה-אמרלד (עריכה inline מלאה ✓)
 │       ├── index.tsx
-│       └── components/lead-form.tsx
+│       └── components/
+│           ├── hero.tsx
+│           ├── intro.tsx
+│           ├── speakers.tsx
+│           ├── bullets.tsx
+│           ├── commitments.tsx
+│           ├── lead-form.tsx
+│           ├── footer.tsx
+│           └── countdown.tsx
 │
 ├── app/
 │   ├── layout.tsx              # RTL + Google Sans + Heebo
@@ -144,7 +156,7 @@ hm-webinars/
 
 ### 4. הפיכה למערכת מולטי-קמפיין
 - Prisma + SQLite + מודל Campaign/Lead
-- 3 תבניות: **Bold Hero** (קיים, refactor), **Editorial** (מגזיני), **Energetic** (תוסס)
+- 4 תבניות: **Bold Hero** (קיים, refactor), **Editorial** (מגזיני), **Energetic** (תוסס), **Wealth** (השקעות, ירוק אמרלד, עריכה inline מלאה)
 - ראוט דינמי `/[slug]` שטוען מה-DB ובוחר תבנית
 - API CRUD לקמפיינים
 - העלאת תמונות (Vercel Blob / local fallback)

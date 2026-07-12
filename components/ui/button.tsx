@@ -24,6 +24,8 @@ const buttonVariants = cva(
           "bg-gradient-to-br from-brand-primary-2 to-brand-primary text-white hover:brightness-110 shadow-glow-brand hover:-translate-y-0.5",
         purple:
           "bg-gradient-to-br from-brand-purple-2 to-brand-purple text-white hover:brightness-110 shadow-glow-purple hover:-translate-y-0.5",
+        emerald:
+          "bg-gradient-to-br from-brand-emerald-light via-brand-emerald to-[#059669] text-brand-forest hover:brightness-110 shadow-glow-emerald hover:-translate-y-0.5",
       },
       size: {
         default: "h-11 px-5 text-base [&_svg]:size-4",

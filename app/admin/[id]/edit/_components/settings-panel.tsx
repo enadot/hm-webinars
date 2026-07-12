@@ -17,6 +17,7 @@ import {
   Zap,
   Check,
   Mail,
+  TrendingUp,
 } from "lucide-react";
 import { listTemplates } from "@/lib/templates";
 import type { CampaignDraft } from "./visual-editor";
@@ -31,12 +32,14 @@ const TEMPLATE_ICONS: Record<string, React.ReactNode> = {
   "bold-hero": <Sparkles className="size-5" />,
   editorial: <BookOpen className="size-5" />,
   energetic: <Zap className="size-5" />,
+  wealth: <TrendingUp className="size-5" />,
 };
 
 const TEMPLATE_GRADIENTS: Record<string, string> = {
   "bold-hero": "from-brand-primary via-brand-purple to-brand-coral",
   editorial: "from-stone-700 to-stone-900",
   energetic: "from-fuchsia-500 via-pink-500 to-amber-400",
+  wealth: "from-brand-forest via-emerald-700 to-brand-emerald",
 };
 
 export function SettingsPanel({ draft, onConfig, onPatch }: Props) {
@@ -65,7 +68,7 @@ export function SettingsPanel({ draft, onConfig, onPatch }: Props) {
       </Section>
 
       <Section title="תבנית עיצוב" icon={<Palette className="size-4" />}>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {listTemplates().map((t) => {
             const selected = draft.templateId === t.id;
             return (

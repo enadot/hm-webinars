@@ -2,9 +2,10 @@ import type { ReactNode } from "react";
 import { BoldHeroTemplate } from "@/templates/bold-hero";
 import { EditorialTemplate } from "@/templates/editorial";
 import { EnergeticTemplate } from "@/templates/energetic";
+import { WealthTemplate } from "@/templates/wealth";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
-export type TemplateId = "bold-hero" | "editorial" | "energetic";
+export type TemplateId = "bold-hero" | "editorial" | "energetic" | "wealth";
 
 export type TemplateProps = { config: CampaignConfig; slug?: string };
 export type TemplateComponent = (props: TemplateProps) => ReactNode;
@@ -41,6 +42,14 @@ export const TEMPLATES: Record<TemplateId, TemplateMeta> = {
       "צבעים תוססים, בלוקים מודולריים, פטרני רקע ואנימציות. מתאים לצעירים, סטארטאפים וקמפיינים אנרגטיים.",
     preview: "/templates/energetic.png",
     Component: EnergeticTemplate,
+  },
+  wealth: {
+    id: "wealth",
+    name: "Wealth",
+    description:
+      "ירוק אמרלד עמוק עם גרף צמיחה, זכוכית וטיפוגרפיה יוקרתית. מתאים לוובינרים בתחום ההשקעות, פיננסים וצמיחה כלכלית.",
+    preview: "/templates/wealth.png",
+    Component: WealthTemplate,
   },
 };
 
