@@ -23,7 +23,7 @@ export function EdFaq({ config }: { config: CampaignConfig }) {
         <EditableText
           path="editorial.faq.label"
           as="div"
-          className="font-mono text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
           placeholder="07 — תווית"
         />
         <EditableText
@@ -44,7 +44,7 @@ export function EdFaq({ config }: { config: CampaignConfig }) {
                   className="flex justify-between items-center gap-4 w-full py-5 px-1 font-semibold text-[17px] text-[#0a0b0d] hover:text-[#0052ff] transition-colors text-start bg-transparent border-0 cursor-pointer font-heebo"
                 >
                   <EditableText path={`editorial.faq.items.${i}.q`} as="span" placeholder="שאלה" />
-                  <span className="font-mono text-lg text-[#0052ff] flex-none" aria-hidden>
+                  <span className="font-tam text-lg text-[#0052ff] flex-none" aria-hidden>
                     {isOpen ? "−" : "+"}
                   </span>
                 </button>

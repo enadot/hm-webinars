@@ -22,6 +22,7 @@ const config: Config = {
         display: ['"Google Sans"', '"Heebo"', "system-ui", "sans-serif"],
         heebo: ['"Heebo"', "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
+        tam: ['"Tel Aviv Modernist"', '"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       fontSize: {
         // Larger base sizes for impactful Hebrew typography

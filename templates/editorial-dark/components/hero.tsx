@@ -1,6 +1,7 @@
 import { EditableText } from "@/components/editable/text";
 import { EditableImage } from "@/components/editable/image";
 import { EditableSection } from "@/components/editable/section";
+import { EdCountdownStrip } from "./countdown";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
 export function EdHero({ config }: { config: CampaignConfig }) {
@@ -22,7 +23,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
           <EditableText
             path="brand.tagline"
             as="span"
-            className="font-mono text-[12px] text-[#a8acb3] tracking-widest"
+            className="font-tam text-[12px] text-[#a8acb3] tracking-widest"
             placeholder="TAG"
           />
         </div>
@@ -38,7 +39,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
       <div className="flex-1 grid lg:grid-cols-2 gap-12 items-center w-full max-w-[1200px] mx-auto px-6 pt-8 pb-16 lg:pb-20">
         {/* Copy */}
         <div className="flex flex-col items-start gap-6 max-w-[620px]">
-          <div className="flex items-center gap-2 border border-white/15 rounded-full px-4 py-2 font-mono text-[11.5px] tracking-wide text-[#a8acb3]">
+          <div className="flex items-center gap-2 border border-white/15 rounded-full px-4 py-2 font-tam text-[11.5px] tracking-wide text-[#a8acb3]">
             <span className="size-[7px] rounded-full bg-[#0052ff] inline-block shrink-0" />
             <EditableText path="hero.eyebrow" as="span" placeholder="באדג' עליון" />
           </div>
@@ -66,7 +67,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
               className="bg-[#0052ff] hover:bg-[#003ecc] transition-colors text-white font-semibold text-[17px] px-8 py-4 rounded-full inline-flex items-center gap-2.5"
             >
               <EditableText path="hero.ctaText" as="span" placeholder="טקסט כפתור" />
-              <span className="font-mono">&#8592;</span>
+              <span className="font-tam">&#8592;</span>
             </a>
             {webinar.spotsLimited && (
               <div className="text-[13px] text-[#7c828a]">
@@ -77,7 +78,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
           <EditableText
             path="webinar.dateLabel"
             as="div"
-            className="font-mono text-[12.5px] text-[#a8acb3] border-t border-white/10 pt-4 mt-1.5 w-full"
+            className="font-tam text-[12.5px] text-[#a8acb3] border-t border-white/10 pt-4 mt-1.5 w-full"
             placeholder="פרטי מועד הוובינר"
           />
         </div>
@@ -118,7 +119,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
               <EditableText
                 path="editorial.salaryCard.title"
                 as="div"
-                className="font-mono text-[10px] tracking-widest text-[#7c828a] mb-2"
+                className="font-tam text-[10px] tracking-widest text-[#7c828a] mb-2"
                 placeholder="כותרת"
               />
               <div className="flex flex-col gap-1.5 text-[12.5px]">
@@ -133,7 +134,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
                     <EditableText
                       path={`editorial.salaryCard.rows.${i}.value`}
                       as="span"
-                      className={`font-mono ${i === 0 ? "text-[#05b169]" : ""}`}
+                      className={`font-tam ${i === 0 ? "text-[#05b169]" : ""}`}
                       placeholder="₪"
                     />
                   </div>
@@ -147,7 +148,7 @@ export function EdHero({ config }: { config: CampaignConfig }) {
             <EditableText
               path="editorial.heroChipMono"
               as="span"
-              className="font-mono text-[11px] text-[#3d7bff]"
+              className="font-tam text-[11px] text-[#3d7bff]"
               placeholder="AI"
             />
             <EditableText
@@ -164,6 +165,9 @@ export function EdHero({ config }: { config: CampaignConfig }) {
           </div>
         </div>
       </div>
+
+      {/* Bold date + countdown strip */}
+      <EdCountdownStrip config={config} />
     </EditableSection>
   );
 }

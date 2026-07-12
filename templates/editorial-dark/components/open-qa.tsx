@@ -12,7 +12,7 @@ export function EdOpenQa({ config }: { config: CampaignConfig }) {
           <EditableText
             path="editorial.qa.label"
             as="div"
-            className="font-mono text-xs tracking-[2px] text-[#7c828a] mb-4"
+            className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
             placeholder="06 — תווית"
           />
           <h2 className="m-0 mb-4 font-medium text-[clamp(26px,3.4vw,42px)] tracking-[-0.7px] leading-[1.18]">

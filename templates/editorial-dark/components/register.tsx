@@ -158,7 +158,7 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
                   onChange={(e) => setPhone(normalizeIsraeliPhone(e.target.value))}
                   aria-invalid={!!errors.phone}
                   disabled={editing}
-                  className={`${inputClass} font-mono text-right`}
+                  className={`${inputClass} font-tam text-right`}
                 />
                 {errors.phone && (
                   <span className="text-[12.5px] text-[#ff7a86]">{errors.phone}</span>

@@ -24,7 +24,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
         <EditableText
           path="speakers.eyebrow"
           as="div"
-          className="font-mono text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
           placeholder="04 — תווית"
         />
         <div className="grid lg:grid-cols-2 gap-14 items-center">
@@ -62,7 +62,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
                   <EditableItemControls listPath="editorial.stats" index={i} />
                   <div className="flex flex-col">
                     {editing ? (
-                      <span className="font-mono text-[clamp(40px,4.5vw,58px)] font-semibold text-[#0052ff] leading-none">
+                      <span className="font-tam text-[clamp(40px,4.5vw,58px)] font-semibold text-[#0052ff] leading-none">
                         <EditableText
                           path={`editorial.stats.${i}.value`}
                           as="span"
@@ -79,7 +79,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
                       <StatNumber
                         value={s.value}
                         suffix={s.suffix}
-                        className="font-mono text-[clamp(40px,4.5vw,58px)] font-semibold text-[#0052ff] leading-none"
+                        className="font-tam text-[clamp(40px,4.5vw,58px)] font-semibold text-[#0052ff] leading-none"
                       />
                     )}
                     <EditableText
@@ -128,7 +128,7 @@ export function EdPresenter({ config }: { config: CampaignConfig }) {
               <EditableText
                 path="editorial.presenterBadgeLabel"
                 as="span"
-                className="font-mono text-[#3d7bff] text-[10.5px] tracking-[1px] block mb-1"
+                className="font-tam text-[#3d7bff] text-[10.5px] tracking-[1px] block mb-1"
                 placeholder="LABEL"
               />
               <EditableText

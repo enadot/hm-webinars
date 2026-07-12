@@ -36,7 +36,7 @@ export function EdQuestions({ config }: { config: CampaignConfig }) {
         <EditableText
           path="editorial.questions.label"
           as="div"
-          className="font-mono text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
           placeholder="01 — תווית"
         />
         <h2 className="m-0 mb-12 font-medium text-[clamp(26px,3.6vw,44px)] leading-[1.18] tracking-[-0.5px] max-w-[22ch] [text-wrap:pretty]">
@@ -81,7 +81,7 @@ export function EdQuestions({ config }: { config: CampaignConfig }) {
             dir="ltr"
           >
             <div
-              className={`flex gap-10 w-max whitespace-nowrap font-mono text-[12.5px] text-[#7c828a] ${
+              className={`flex gap-10 w-max whitespace-nowrap font-tam text-[12.5px] text-[#7c828a] ${
                 editing ? "" : "animate-marquee-rtl"
               }`}
             >

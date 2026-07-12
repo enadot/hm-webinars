@@ -22,7 +22,7 @@ export function EdAudience({ config }: { config: CampaignConfig }) {
         <EditableText
           path="editorial.audience.label"
           as="div"
-          className="font-mono text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
           placeholder="05 — תווית"
         />
         <EditableText
@@ -36,7 +36,7 @@ export function EdAudience({ config }: { config: CampaignConfig }) {
             <EditableItemWrapper key={i}>
               <EditableItemControls listPath="editorial.audience.cards" index={i} />
               <div className="border border-[#dee1e6] rounded-3xl px-6 py-7 flex flex-col gap-3 h-full hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-shadow">
-                <span className="font-mono text-[28px] text-[#0052ff] leading-none" aria-hidden>
+                <span className="font-tam text-[28px] text-[#0052ff] leading-none" aria-hidden>
                   &quot;
                 </span>
                 <EditableText

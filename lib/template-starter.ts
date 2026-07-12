@@ -30,7 +30,12 @@ export function starterConfigFor(templateId: string): CampaignConfig {
     },
     webinar: {
       ...base.webinar,
-      dateLabel: "וובינר Zoom חי · התאריך הקרוב יפורסם לנרשמים",
+      // 26.7.2026 20:00 Israel time (UTC+3 in July)
+      dateISO: "2026-07-26T17:00:00.000Z",
+      dateLabel: "יום ראשון, 26.7 · בשעה 20:00 · וובינר Zoom חי",
+      dayShort: "ראשון",
+      dateShort: "26.7",
+      time: "20:00",
       venue: "וובינר Zoom חי",
       venueShort: "Zoom",
       spotsLimited: true,

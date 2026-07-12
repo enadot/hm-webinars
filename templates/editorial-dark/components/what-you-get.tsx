@@ -18,7 +18,7 @@ export function EdWhatYouGet({ config }: { config: CampaignConfig }) {
         <EditableText
           path="bullets.eyebrow"
           as="div"
-          className="font-mono text-xs tracking-[2px] text-[#7c828a] mb-4"
+          className="font-tam text-xs tracking-[2px] text-[#7c828a] mb-4"
           placeholder="02 — תווית"
         />
         <h2 className="m-0 mb-3 font-medium text-[clamp(28px,3.8vw,48px)] leading-[1.14] tracking-[-0.8px] max-w-[20ch] [text-wrap:pretty]">
@@ -44,7 +44,7 @@ export function EdWhatYouGet({ config }: { config: CampaignConfig }) {
             <EditableItemWrapper key={i}>
               <EditableItemControls listPath="bullets.items" index={i} />
               <div className="grid grid-cols-[minmax(48px,64px)_1fr] md:grid-cols-[minmax(64px,120px)_minmax(0,1.1fr)_minmax(0,1.6fr)] gap-y-2 gap-x-7 items-baseline py-6 border-t border-[#dee1e6] hover:bg-[#f7f7f7] transition-colors">
-                <span className="font-mono text-[clamp(24px,3vw,40px)] font-medium text-[#0052ff]">
+                <span className="font-tam text-[clamp(24px,3vw,40px)] font-medium text-[#0052ff]">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <EditableText

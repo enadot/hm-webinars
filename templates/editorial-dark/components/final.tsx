@@ -56,7 +56,7 @@ export function EdFinal({ config }: { config: CampaignConfig }) {
         <EditableText
           path="editorial.final.footerMono"
           as="span"
-          className="font-mono"
+          className="font-tam"
           placeholder="Footer tag"
           hideIfEmpty
         />
