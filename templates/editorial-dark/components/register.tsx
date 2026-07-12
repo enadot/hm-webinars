@@ -115,13 +115,18 @@ export function EdRegister({ config, slug }: { config: CampaignConfig; slug?: st
               className="font-bold text-[24px]"
               placeholder="כותרת כרטיס"
             />
-            <EditableText
-              path="webinar.dateLabel"
-              as="div"
-              className="text-[13.5px] text-[#a8acb3] -mt-2"
-              placeholder="מועד"
-              hideIfEmpty
-            />
+            <div className="-mt-2 flex flex-wrap items-center gap-x-2 text-[13.5px] text-[#a8acb3]">
+              <EditableText path="webinar.dateLabel" as="span" placeholder="מועד" hideIfEmpty />
+              <span className="text-[#0052ff]" aria-hidden>
+                ·
+              </span>
+              <EditableText
+                path="editorial.hebrewDate"
+                as="span"
+                placeholder="תאריך עברי"
+                hideIfEmpty
+              />
+            </div>
 
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">

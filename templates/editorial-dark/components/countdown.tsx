@@ -77,6 +77,15 @@ export function EdCountdownStrip({ config }: { config: CampaignConfig }) {
             <EditableText path="webinar.time" as="span" className="font-tam" placeholder="20:00" />
             <span> בערב</span>
           </div>
+          <div className="mt-2.5 inline-flex items-center gap-2.5 text-[15px] md:text-base text-[#a8acb3]">
+            <span className="w-6 h-px bg-[#0052ff]/60" aria-hidden />
+            <EditableText
+              path="editorial.hebrewDate"
+              as="span"
+              placeholder="תאריך עברי"
+              hideIfEmpty
+            />
+          </div>
         </div>
 
         {/* Countdown tiles */}

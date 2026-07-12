@@ -226,6 +226,7 @@ export function starterConfigFor(templateId: string): CampaignConfig {
       },
       registerLabel: "הרשמה",
       limitedText: "מספר המקומות מוגבל",
+      hebrewDate: "י״ב אב תשפ״ו",
       faq: {
         label: "07 — שאלות נפוצות",
         title: "רגע לפני שנרשמים",

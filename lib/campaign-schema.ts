@@ -136,6 +136,8 @@ export const EditorialSchema = z.object({
     .default(() => ({ label: "", title: "", titleAccent: "", body: "", punch: "", bubbles: [] })),
   registerLabel: z.string().default(""),
   limitedText: z.string().default("מספר המקומות מוגבל"),
+  // Hebrew calendar date shown alongside the Gregorian date (e.g. י״ב אב תשפ״ו).
+  hebrewDate: z.string().default(""),
   faq: z
     .object({
       label: z.string().default(""),
