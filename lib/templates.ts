@@ -4,9 +4,16 @@ import { EditorialTemplate } from "@/templates/editorial";
 import { EnergeticTemplate } from "@/templates/energetic";
 import { WealthTemplate } from "@/templates/wealth";
 import { EditorialDarkTemplate } from "@/templates/editorial-dark";
+import { StepChangeTemplate } from "@/templates/step-change";
 import type { CampaignConfig } from "@/lib/campaign-schema";
 
-export type TemplateId = "bold-hero" | "editorial" | "energetic" | "wealth" | "editorial-dark";
+export type TemplateId =
+  | "bold-hero"
+  | "editorial"
+  | "energetic"
+  | "wealth"
+  | "editorial-dark"
+  | "step-change";
 
 export type TemplateProps = { config: CampaignConfig; slug?: string };
 export type TemplateComponent = (props: TemplateProps) => ReactNode;
@@ -59,6 +66,14 @@ export const TEMPLATES: Record<TemplateId, TemplateMeta> = {
       "כהה עיתונאי-מודרני: טיפוגרפיה מדויקת, מונו-ספייס, סקציות ממוספרות, כרטיסי AI, שו\"ת ו-FAQ. נבנה לוובינר קריירה/לימודים ומגיע עם תוכן מלא מוכן לעריכה.",
     preview: "/templates/editorial-dark.png",
     Component: EditorialDarkTemplate,
+  },
+  "step-change": {
+    id: "step-change",
+    name: "Step Change",
+    description:
+      "ירוק-אורן כהה מול נייר בהיר: hero עם שאלות שנכתבות בזמן אמת, קרוסלת ציטוטים, תוכנית מפגש אינטראקטיבית, טבלת סיכון וגילוי נאות. נבנה לוובינר השקעות ומגיע עם תוכן מלא מוכן לעריכה.",
+    preview: "/templates/step-change.png",
+    Component: StepChangeTemplate,
   },
 };
 
