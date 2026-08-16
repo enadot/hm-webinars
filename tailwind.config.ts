@@ -23,6 +23,9 @@ const config: Config = {
         heebo: ['"Heebo"', "system-ui", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
         tam: ['"Tel Aviv Modernist"', '"JetBrains Mono"', "ui-monospace", "monospace"],
+        // Step Change template: Modernist for body/headings, Eclectic for eyebrows/numbers.
+        tamo: ['"Tel Aviv Modernist"', '"Heebo"', "system-ui", "sans-serif"],
+        tae: ['"Tel Aviv Eclectic"', '"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       fontSize: {
         // Larger base sizes for impactful Hebrew typography
@@ -131,6 +134,10 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-10px)" },
         },
+        "blink": {
+          "0%, 49%": { opacity: "1" },
+          "50%, 100%": { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -143,6 +150,7 @@ const config: Config = {
         "float-y": "float-y 7s ease-in-out infinite",
         "float-y-slow": "float-y 8s ease-in-out 1.2s infinite",
         "float-y-fast": "float-y 6s ease-in-out 0.6s infinite",
+        "blink": "blink 1s step-end infinite",
       },
     },
   },

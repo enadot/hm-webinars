@@ -10,6 +10,33 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Tel Aviv Modernist";
+  src: url("/fonts/telaviv-modernist-bold.woff2") format("woff2");
+  font-weight: 500 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tel Aviv Eclectic ships as two files under one family: Latin + Hebrew. */
+@font-face {
+  font-family: "Tel Aviv Eclectic";
+  src: url("/fonts/telaviv-eclectic-latin.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-05CF;
+}
+
+@font-face {
+  font-family: "Tel Aviv Eclectic";
+  src: url("/fonts/telaviv-eclectic-hebrew.woff2") format("woff2");
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+05D0-05FF;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
