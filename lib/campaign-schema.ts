@@ -162,6 +162,203 @@ export const EditorialSchema = z.object({
 });
 export type Editorial = z.infer<typeof EditorialSchema>;
 
+// Content for the "step-change" template's design-specific sections (typing hero,
+// pain carousel, agenda tabs, risk table, perks, proof, FAQ, closing).
+// Optional + fully defaulted so other templates/campaigns are unaffected.
+const scText = () => z.string().default("");
+
+export const StepChangeSchema = z.object({
+  topbarCta: scText(),
+  brandChip: scText(),
+  brandChipStrong: scText(),
+  heroChips: z.array(z.string()).default([]),
+  heroCtaNote: scText(),
+  // Questions cycled through the hero's animated search bar.
+  typingQuestions: z.array(z.string()).default([]),
+  trust: z.array(z.object({ value: scText(), label: scText() })).default([]),
+  pain: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      titleAccent: scText(),
+      dragLabel: scText(),
+      quotes: z.array(z.string()).default([]),
+      closing: scText(),
+      cta: scText(),
+      ctaNote: scText(),
+    })
+    .default(() => ({
+      eyebrow: "",
+      title: "",
+      titleAccent: "",
+      dragLabel: "",
+      quotes: [],
+      closing: "",
+      cta: "",
+      ctaNote: "",
+    })),
+  bridge: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      body1: scText(),
+      body2: scText(),
+      punch: scText(),
+    })
+    .default(() => ({ eyebrow: "", title: "", body1: "", body2: "", punch: "" })),
+  agenda: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      modules: z
+        .array(
+          z.object({
+            n: scText(),
+            title: scText(),
+            promise: scText(),
+            detail: scText(),
+            tag: scText(),
+          })
+        )
+        .default([]),
+      qaNote: scText(),
+      closing: scText(),
+      cta: scText(),
+      ctaNote: scText(),
+    })
+    .default(() => ({
+      eyebrow: "",
+      title: "",
+      modules: [],
+      qaNote: "",
+      closing: "",
+      cta: "",
+      ctaNote: "",
+    })),
+  risk: z
+    .object({
+      eyebrow: scText(),
+      titleAccent: scText(),
+      title: scText(),
+      body1: scText(),
+      body2: scText(),
+      punch: scText(),
+      badHead: scText(),
+      goodHead: scText(),
+      rows: z.array(z.object({ bad: scText(), good: scText() })).default([]),
+    })
+    .default(() => ({
+      eyebrow: "",
+      titleAccent: "",
+      title: "",
+      body1: "",
+      body2: "",
+      punch: "",
+      badHead: "",
+      goodHead: "",
+      rows: [],
+    })),
+  speakersEyebrow: scText(),
+  // Per-speaker extras rendered alongside speakers.list[i] (badge number, meta
+  // line under the role, and the pull-quote under the bio).
+  speakerCards: z
+    .array(z.object({ badge: scText(), meta: scText(), punch: scText() }))
+    .default([]),
+  audience: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      cards: z
+        .array(
+          z.object({
+            quote: scText(),
+            note: scText(),
+            dark: z.boolean().default(false),
+          })
+        )
+        .default([]),
+      footnote: scText(),
+    })
+    .default(() => ({ eyebrow: "", title: "", cards: [], footnote: "" })),
+  proof: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      items: z.array(z.object({ value: scText(), label: scText() })).default([]),
+      testimonials: scText(),
+      punch: scText(),
+    })
+    .default(() => ({ eyebrow: "", title: "", items: [], testimonials: "", punch: "" })),
+  perks: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      titleAccent: scText(),
+      body1: scText(),
+      body2: scText(),
+      cta: scText(),
+      ctaNote: scText(),
+      items: z
+        .array(
+          z.object({
+            n: scText(),
+            title: scText(),
+            body: scText(),
+            highlight: z.boolean().default(false),
+          })
+        )
+        .default([]),
+      note: scText(),
+    })
+    .default(() => ({
+      eyebrow: "",
+      title: "",
+      titleAccent: "",
+      body1: "",
+      body2: "",
+      cta: "",
+      ctaNote: "",
+      items: [],
+      note: "",
+    })),
+  ctaBand: z
+    .object({ title: scText(), body: scText(), cta: scText(), note: scText() })
+    .default(() => ({ title: "", body: "", cta: "", note: "" })),
+  register: z
+    .object({
+      eyebrow: scText(),
+      title: scText(),
+      body: scText(),
+      details: z.array(z.object({ label: scText(), value: scText() })).default([]),
+      legal: scText(),
+    })
+    .default(() => ({ eyebrow: "", title: "", body: "", details: [], legal: "" })),
+  faqTitle: scText(),
+  faq: z.array(z.object({ q: scText(), a: scText() })).default([]),
+  final: z
+    .object({
+      title: scText(),
+      titleAccent: scText(),
+      mono: scText(),
+      cta: scText(),
+      credit: scText(),
+      legal: scText(),
+      copyright: scText(),
+    })
+    .default(() => ({
+      title: "",
+      titleAccent: "",
+      mono: "",
+      cta: "",
+      credit: "",
+      legal: "",
+      copyright: "",
+    })),
+  stickyCta: scText(),
+  stickyNote: scText(),
+});
+export type StepChange = z.infer<typeof StepChangeSchema>;
+
 export const StyleOverrideSchema = z.object({
   color: z.string().optional(),
   backgroundColor: z.string().optional(),
@@ -260,6 +457,8 @@ export const CampaignConfigSchema = z.object({
   theme: ThemeSchema.default(() => ThemeSchema.parse({})),
   // Design-specific content used by the "editorial-dark" template only.
   editorial: EditorialSchema.optional(),
+  // Design-specific content used by the "step-change" template only.
+  stepChange: StepChangeSchema.optional(),
   // Optional sponsor / promo banner shown before the lead form.
   banner: BannerSchema.default(() => BannerSchema.parse({})),
   // Third-party integrations enabled per-campaign (global creds live in AppSetting).
