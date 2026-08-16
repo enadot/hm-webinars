@@ -14,7 +14,9 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
     >
       <div className="max-w-[860px] mx-auto px-6 box-border flex flex-col items-center gap-[22px]">
         <h2 className="m-0 font-black text-[clamp(38px,5.6vw,76px)] leading-[1.06] tracking-[-1.4px] [text-wrap:balance]">
-          <EditableText path="stepChange.final.title" as="span" multiline placeholder="כותרת" />{" "}
+          <EditableText path="stepChange.final.title" as="span" multiline placeholder="כותרת" />
+          {/* The accent line always starts a new line, as in the approved design. */}
+          {config.stepChange.final.titleAccent ? <br /> : " "}
           <EditableText
             path="stepChange.final.titleAccent"
             as="span"
