@@ -26,7 +26,9 @@ export function ScRisk({ config }: { config: CampaignConfig }) {
               as="span"
               className="text-[#74DF93]"
               placeholder="ציטוט מודגש"
-            />{" "}
+            />
+            {/* The question sits on its own line above the answer, as in the design. */}
+            {risk.titleAccent ? <br /> : " "}
             <EditableText path="stepChange.risk.title" as="span" multiline placeholder="המשך כותרת" />
           </h2>
           <EditableText
