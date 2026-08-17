@@ -259,6 +259,7 @@ export const StepChangeSchema = z.object({
       rows: [],
     })),
   speakersEyebrow: scText(),
+  speakersTitle: scText(),
   // Per-speaker extras rendered alongside speakers.list[i] (badge number, meta
   // line under the role, and the pull-quote under the bio).
   speakerCards: z

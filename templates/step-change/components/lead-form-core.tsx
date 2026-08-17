@@ -14,7 +14,7 @@ const PHONE_RE = /^0\d{8,9}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const inputClass =
-  "bg-[#162321] border border-white/[0.14] focus:border-[#74DF93] rounded-xl p-4 text-base text-[#EFEFEF] outline-none w-full box-border placeholder:text-[#7C918A] transition-colors";
+  "bg-[#162321] border border-white/[0.14] focus:border-[#74DF93] rounded-xl p-4 text-base text-[#EFEFEF] outline-none w-full box-border transition-colors";
 
 /** Registration form for the Step Change template — posts to /api/leads with UTM. */
 export function ScLeadForm({ slug }: { slug?: string }) {
@@ -84,7 +84,6 @@ export function ScLeadForm({ slug }: { slug?: string }) {
           id="sc-name"
           name="name"
           autoComplete="name"
-          placeholder="לדוגמה: ישראל ישראלי"
           value={name}
           onChange={(e) => setName(e.target.value)}
           aria-invalid={!!errors.name}
@@ -105,7 +104,6 @@ export function ScLeadForm({ slug }: { slug?: string }) {
           dir="ltr"
           inputMode="tel"
           autoComplete="tel-national"
-          placeholder="050-0000000"
           value={phone}
           onChange={(e) => setPhone(normalizeIsraeliPhone(e.target.value))}
           aria-invalid={!!errors.phone}
@@ -126,7 +124,6 @@ export function ScLeadForm({ slug }: { slug?: string }) {
           type="email"
           dir="ltr"
           autoComplete="email"
-          placeholder="name@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={!!errors.email}

@@ -19,8 +19,16 @@ export function ScSpeakers({ config }: { config: CampaignConfig }) {
         <EditableText
           path="stepChange.speakersEyebrow"
           as="div"
-          className="font-tae text-[clamp(13px,1.3vw,15px)] tracking-[2.5px] text-[#9CAFA5] mb-12"
+          className="font-tae text-[clamp(13px,1.3vw,15px)] tracking-[2.5px] text-[#9CAFA5] mb-5"
           placeholder="שורת פתיחה"
+        />
+        <EditableText
+          path="stepChange.speakersTitle"
+          as="h2"
+          multiline
+          className="m-0 mb-12 font-black text-[clamp(34px,4.8vw,64px)] leading-[1.08] tracking-[-1.2px] [text-wrap:balance]"
+          placeholder="כותרת הסקציה"
+          hideIfEmpty
         />
 
         {list.map((s, i) => (
