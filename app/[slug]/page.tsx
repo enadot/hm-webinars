@@ -15,15 +15,39 @@ export async function generateMetadata({
   const { slug } = await params;
   const campaign = await prisma.campaign.findUnique({ where: { slug } });
   if (!campaign) return {};
+
+  let cfg: Record<string, any> | null = null;
   try {
-    const cfg = JSON.parse(campaign.config);
-    return {
-      title: cfg?.meta?.title ?? campaign.name,
-      description: cfg?.meta?.description,
-    };
+    cfg = JSON.parse(campaign.config);
   } catch {
-    return { title: campaign.name };
+    // Fall through to the campaign name below.
   }
+
+  const title = cfg?.meta?.title || campaign.name;
+  const description = cfg?.meta?.description || undefined;
+  const siteName = cfg?.brand?.name || undefined;
+
+  // Spell out openGraph and twitter explicitly: Next merges metadata per-field,
+  // so a parent openGraph block would otherwise survive and advertise the wrong
+  // campaign on every share card.
+  return {
+    title,
+    description,
+    alternates: { canonical: `/${slug}` },
+    openGraph: {
+      type: "website",
+      locale: "he_IL",
+      url: `/${slug}`,
+      title,
+      description,
+      siteName,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function CampaignPage({

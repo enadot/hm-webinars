@@ -1,14 +1,26 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+/**
+ * Absolute base for canonical URLs and OG image paths. Social crawlers reject
+ * relative image URLs, so this has to resolve even in preview deployments.
+ */
+export const siteUrl = (() => {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.startsWith("http") ? explicit : `https://${explicit}`;
+  const vercel =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  return vercel ? `https://${vercel}` : "http://localhost:3000";
+})();
+
+// Generic defaults only. Each campaign page overrides the whole set — including
+// openGraph and twitter — in its own generateMetadata; a specific campaign's
+// copy must never sit here, or it leaks onto every other campaign's share card.
 export const metadata: Metadata = {
-  title: "וובינר: השקעה בנדל\"ן בלי פחד | אבינעם הרוש ומשה אדרי | 10/6 ב-20:00",
-  description:
-    "כל מה שזוגות צעירים ומשקיעים חייבים לדעת לפני חתימת חוזה. וובינר חינמי מהבית - 10/6 בשעה 20:00. מקומות מוגבלים.",
+  metadataBase: new URL(siteUrl),
+  title: "וובינרים",
+  description: "דפי נחיתה והרשמה לוובינרים.",
   openGraph: {
-    title: "השקעה בנדל\"ן בלי פחד - וובינר חינמי",
-    description:
-      "אבינעם הרוש ומשה אדרי חושפים את המודלים שפיתחו לאיתור הזדמנויות וניהול סיכונים בשוק הנוכחי.",
     type: "website",
     locale: "he_IL",
   },

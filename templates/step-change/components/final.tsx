@@ -66,7 +66,7 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
           hideIfEmpty
         />
         {/* Breathing room above the mobile sticky CTA. */}
-        <div aria-hidden className="h-[70px] md:h-0" />
+        <div aria-hidden className="h-[104px] md:h-0" />
       </div>
     </EditableSection>
   );
