@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { prisma, isConnectionError } from "@/lib/db";
+import { getFallbackCampaign } from "@/lib/campaign-source";
 import { getSendmsgConfig } from "@/lib/app-settings";
 import { addUserToList } from "@/lib/sendmsg";
 import { ensureCampaignList, logSendmsg } from "@/lib/sendmsg-campaign";
@@ -70,25 +71,45 @@ export async function POST(request: Request) {
     leadsWebhookUrl: string | null;
     config: string;
   } | null;
+  // The database can be unreachable (Neon suspends/disables its compute). A
+  // registration must not be lost over that, so both the lookup and the insert
+  // degrade to the webhook path below instead of failing the request.
+  let dbReachable = true;
   if (campaignSlug) {
-    campaign = await prisma.campaign.findUnique({
-      where: { slug: campaignSlug },
-      select: { id: true, slug: true, name: true, leadsWebhookUrl: true, config: true },
-    });
+    try {
+      campaign = await prisma.campaign.findUnique({
+        where: { slug: campaignSlug },
+        select: { id: true, slug: true, name: true, leadsWebhookUrl: true, config: true },
+      });
+    } catch (e) {
+      if (!isConnectionError(e)) throw e;
+      dbReachable = false;
+      console.error(`[leads] database unreachable while reading "${campaignSlug}"`, e);
+      const snapshot = getFallbackCampaign(campaignSlug);
+      campaign = snapshot
+        ? { id: snapshot.id, slug: snapshot.slug, name: snapshot.name, leadsWebhookUrl: null, config: snapshot.config }
+        : null;
+    }
   }
 
   // Persist lead (only if we have a campaign)
-  if (campaign) {
-    await prisma.lead.create({
-      data: {
-        campaignId: campaign.id,
-        name: cleanName,
-        phone: cleanPhone,
-        email: cleanEmail,
-        ...utmData,
-        userAgent: request.headers.get("user-agent") || null,
-      },
-    });
+  if (campaign && dbReachable) {
+    try {
+      await prisma.lead.create({
+        data: {
+          campaignId: campaign.id,
+          name: cleanName,
+          phone: cleanPhone,
+          email: cleanEmail,
+          ...utmData,
+          userAgent: request.headers.get("user-agent") || null,
+        },
+      });
+    } catch (e) {
+      if (!isConnectionError(e)) throw e;
+      dbReachable = false;
+      console.error("[leads] database unreachable while storing the lead", e);
+    }
   }
 
   // Forward to webhook (campaign's URL takes precedence over global default)
@@ -103,6 +124,7 @@ export async function POST(request: Request) {
   };
 
   const webhookUrl = campaign?.leadsWebhookUrl || process.env.LEADS_WEBHOOK_URL;
+  let webhookDelivered = false;
   if (webhookUrl) {
     try {
       const res = await fetch(webhookUrl, {
@@ -110,7 +132,9 @@ export async function POST(request: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) {
+      if (res.ok) {
+        webhookDelivered = true;
+      } else {
         console.error(`[leads] webhook ${res.status}: ${await res.text()}`);
       }
     } catch (err) {
@@ -120,8 +144,18 @@ export async function POST(request: Request) {
     console.log("[leads] (no webhook configured) new lead:", payload);
   }
 
+  // The database was down and the webhook did not take it either: nothing
+  // recorded this lead, so don't tell the visitor they are registered.
+  if (!dbReachable && !webhookDelivered) {
+    console.error("[leads] LEAD NOT RECORDED — no database and no webhook delivery:", payload);
+    return NextResponse.json(
+      { ok: false, error: "התקלה זמנית אצלנו ולא הצלחנו לשמור את הפרטים. נסו שוב בעוד רגע." },
+      { status: 503 },
+    );
+  }
+
   // Auto-sync to שלח מסר mailing list (per-campaign, never fails the request).
-  if (campaign) {
+  if (campaign && dbReachable) {
     syncLeadToSendmsg(campaign, {
       name: cleanName,
       phone: cleanPhone,

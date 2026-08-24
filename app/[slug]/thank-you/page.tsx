@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Calendar, Clock, Video } from "lucide-react";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getPublicCampaign } from "@/lib/campaign-source";
 import { safeParseConfig } from "@/lib/campaign-schema";
 
 type Params = { slug: string };
 
 export default async function ThankYou({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
-  const campaign = await prisma.campaign.findUnique({ where: { slug } });
+  const campaign = await getPublicCampaign(slug);
   if (!campaign) notFound();
   const parsed = safeParseConfig(JSON.parse(campaign.config));
   if (!parsed.ok) notFound();

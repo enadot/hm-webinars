@@ -12,7 +12,7 @@ const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve,
  * We deliberately do NOT retry mid-query timeouts (P1002/P1008), which could
  * have partially executed a write.
  */
-function isColdStartError(e: unknown): boolean {
+export function isConnectionError(e: unknown): boolean {
   if (e instanceof Prisma.PrismaClientInitializationError) return true;
   if (e instanceof Prisma.PrismaClientKnownRequestError) {
     // P1001: can't reach DB server · P1017: server has closed the connection
@@ -39,7 +39,7 @@ function createPrismaClient() {
           try {
             return await query(args);
           } catch (e) {
-            if (attempt >= MAX_ATTEMPTS || !isColdStartError(e)) throw e;
+            if (attempt >= MAX_ATTEMPTS || !isConnectionError(e)) throw e;
             console.warn(
               `[db] cold-start retry ${attempt}/${MAX_ATTEMPTS - 1} for ` +
                 `${model ?? "raw"}.${operation} — waiting ${delay}ms`,
