@@ -19,8 +19,9 @@ export function ScHero({ config }: { config: CampaignConfig }) {
       {/* Top bar */}
       <div className="flex items-center justify-between gap-4 max-w-[1160px] w-full mx-auto px-6 py-5 box-border">
         <div className="flex items-center gap-3.5 flex-wrap">
-          {/* The brand mark is dark artwork, so it sits on a light chip to stay legible. */}
-          <span className="inline-flex items-center bg-white rounded-xl px-3 py-1.5 shrink-0">
+          {/* The brand mark is white artwork; it sits straight on the dark hero
+              ground, with no chip behind it. */}
+          <span className="inline-flex items-center shrink-0">
             <EditableImage
               path="brand.logoUrl"
               alt={brand.name || "logo"}

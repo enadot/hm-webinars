@@ -283,7 +283,7 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
         "75 דקות שיסבירו איך שוק ההון עובד, כמה כסף מתאים לכם להשקיע ואיך מודדים סיכון. עם אבי מלכא ופישל רוזנפלד. ללא עלות.",
     },
     brand: {
-      logoUrl: "/logo-hamechadesh.png",
+      logoUrl: "/logo-hamechadesh-white.svg",
       name: "המחדש",
       tagline: "צעד קטן, שינוי גדול",
     },
