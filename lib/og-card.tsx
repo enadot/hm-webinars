@@ -6,7 +6,7 @@ export const OG_SIZE = { width: 1200, height: 630 };
 
 export type OgFont = {
   name: string;
-  data: ArrayBuffer;
+  data: ArrayBuffer | Buffer;
   weight: 400 | 800;
   style: "normal";
 };
