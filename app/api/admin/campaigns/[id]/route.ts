@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { CampaignConfigSchema } from "@/lib/campaign-schema";
 import { getTemplate } from "@/lib/templates";
+import { revalidateCampaigns } from "@/lib/campaign-source";
 import { verifySessionCookie, SESSION_COOKIE } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -79,6 +80,8 @@ export async function PATCH(
     },
   });
 
+  // Both slugs: the campaign may have just been renamed.
+  await revalidateCampaigns(existing.slug, data.slug);
   return NextResponse.json({ ok: true });
 }
 
@@ -91,6 +94,7 @@ export async function DELETE(
   }
   const { id } = await params;
 
-  await prisma.campaign.delete({ where: { id } });
+  const deleted = await prisma.campaign.delete({ where: { id } });
+  await revalidateCampaigns(deleted.slug);
   return NextResponse.json({ ok: true });
 }
