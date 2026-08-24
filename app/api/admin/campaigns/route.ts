@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { CampaignConfigSchema } from "@/lib/campaign-schema";
 import { getTemplate } from "@/lib/templates";
 import { verifySessionCookie, SESSION_COOKIE } from "@/lib/auth";
+import { revalidateCampaigns } from "@/lib/campaign-source";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
@@ -66,5 +67,6 @@ export async function POST(request: Request) {
     },
   });
 
+  await revalidateCampaigns(created.slug);
   return NextResponse.json({ ok: true, id: created.id, slug: created.slug });
 }
