@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getPublicCampaign } from "@/lib/campaign-source";
 import { getTemplate } from "@/lib/templates";
 import { safeParseConfig } from "@/lib/campaign-schema";
 import type { Metadata } from "next";
@@ -13,7 +13,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const campaign = await prisma.campaign.findUnique({ where: { slug } });
+  const campaign = await getPublicCampaign(slug);
   if (!campaign) return {};
   try {
     const cfg = JSON.parse(campaign.config);
@@ -32,7 +32,7 @@ export default async function CampaignPage({
   params: Promise<Params>;
 }) {
   const { slug } = await params;
-  const campaign = await prisma.campaign.findUnique({ where: { slug } });
+  const campaign = await getPublicCampaign(slug);
   if (!campaign || !campaign.published) notFound();
 
   const template = getTemplate(campaign.templateId);

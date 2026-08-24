@@ -1,13 +1,10 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { listPublicCampaigns } from "@/lib/campaign-source";
 import { getTemplate } from "@/lib/templates";
 import { ArrowLeft, Settings } from "lucide-react";
 
 export default async function Home() {
-  const campaigns = await prisma.campaign.findMany({
-    where: { published: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const campaigns = await listPublicCampaigns();
 
   // If there's exactly one published campaign, redirect to it (most common case)
   if (campaigns.length === 1) {
@@ -51,7 +48,7 @@ export default async function Home() {
               const t = getTemplate(c.templateId);
               return (
                 <Link
-                  key={c.id}
+                  key={c.slug}
                   href={`/${c.slug}`}
                   className="group bg-white/10 backdrop-blur-md border-2 border-white/20 hover:border-brand-gold/50 rounded-3xl p-7 transition-all hover:-translate-y-1"
                 >

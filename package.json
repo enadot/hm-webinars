@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "node scripts/build-campaign-fallback.mjs && prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev --schema=./prisma/schema.prisma",
     "db:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio --schema=./prisma/schema.prisma"
+    "db:studio": "prisma studio --schema=./prisma/schema.prisma",
+    "build:campaign-fallback": "node scripts/build-campaign-fallback.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
