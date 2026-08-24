@@ -16,6 +16,28 @@ const CONNECTION_ERRORS = [
   "Can't reach database server",
 ];
 
+// `directUrl = env("DIRECT_URL")` in the schema is mandatory once declared, and
+// only the Production environment defines it — so every Preview build died on
+// P1012 before it reached the database. The pooled URL is a usable stand-in for
+// migrations, so fall back to it rather than failing the build over a variable
+// that exists one environment over.
+if (!process.env.DIRECT_URL && process.env.DATABASE_URL) {
+  console.warn("[migrate] DIRECT_URL is not set — falling back to DATABASE_URL.");
+  process.env.DIRECT_URL = process.env.DATABASE_URL;
+}
+
+// No database configured at all. Outside production that is a preview with no
+// database attached: the pages render from the in-repo snapshot, so let the
+// build through. In production it is a misconfiguration and must be loud.
+if (!process.env.DATABASE_URL) {
+  if (process.env.VERCEL_ENV === "production") {
+    console.error("[migrate] DATABASE_URL is not set in production — failing the build.");
+    process.exit(1);
+  }
+  console.warn("[migrate] no DATABASE_URL in this environment — skipping migrations.");
+  process.exit(0);
+}
+
 const result = spawnSync("npx", ["prisma", "migrate", "deploy"], {
   encoding: "utf8",
   shell: process.platform === "win32",
