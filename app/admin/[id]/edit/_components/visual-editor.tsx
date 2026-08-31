@@ -27,6 +27,7 @@ export type CampaignDraft = {
   templateId: string;
   published: boolean;
   leadsWebhookUrl: string;
+  webinarJoinUrl: string;
   config: CampaignConfig;
 };
 

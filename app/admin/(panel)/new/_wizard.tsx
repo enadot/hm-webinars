@@ -68,6 +68,7 @@ export function NewCampaignWizard() {
         templateId,
         published: false,
         leadsWebhookUrl: "",
+        webinarJoinUrl: "",
         config: starterConfigFor(templateId),
       }),
     });

@@ -4,6 +4,7 @@ import { CampaignConfigSchema } from "@/lib/campaign-schema";
 import { getTemplate } from "@/lib/templates";
 import { verifySessionCookie, SESSION_COOKIE } from "@/lib/auth";
 import { revalidateCampaigns } from "@/lib/campaign-source";
+import { syncAutoReminders } from "@/lib/auto-emails";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
@@ -15,6 +16,7 @@ const CreateSchema = z.object({
   templateId: z.string().min(1),
   published: z.boolean().default(true),
   leadsWebhookUrl: z.string().default(""),
+  webinarJoinUrl: z.string().default(""),
   config: CampaignConfigSchema,
 });
 
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-  const { slug, name, templateId, published, leadsWebhookUrl, config } = parsed.data;
+  const { slug, name, templateId, published, leadsWebhookUrl, webinarJoinUrl, config } = parsed.data;
 
   if (!getTemplate(templateId)) {
     return NextResponse.json({ ok: false, error: `תבנית לא ידועה: ${templateId}` }, { status: 400 });
@@ -63,10 +65,16 @@ export async function POST(request: Request) {
       templateId,
       published,
       leadsWebhookUrl: leadsWebhookUrl || null,
+      webinarJoinUrl: webinarJoinUrl.trim() || null,
       config: JSON.stringify(config),
     },
   });
 
   await revalidateCampaigns(created.slug);
+  try {
+    await syncAutoReminders(created.id);
+  } catch (e) {
+    console.error("[campaigns] reminder sync failed:", e);
+  }
   return NextResponse.json({ ok: true, id: created.id, slug: created.slug });
 }

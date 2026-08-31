@@ -19,6 +19,10 @@ model Campaign {
   templateId        String
   config            String   // JSON-encoded CampaignConfig
   leadsWebhookUrl   String?
+  // Zoom/Meet link for the live session. Deliberately NOT in `config`: that
+  // JSON is serialised into the public page, and the join link must only ever
+  // reach people who registered, through email.
+  webinarJoinUrl    String?
   published         Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -41,10 +45,15 @@ model EmailTemplate {
   sendmsgMessageId Int?      // returned by sendmsg on successful dispatch
   status           String    @default("draft") // draft | scheduled | sent | failed
   errorMessage     String?
+  // Set for templates this app schedules by itself: "reminder_24h" | "reminder_1h".
+  // NULL for everything an admin composed, and Postgres allows many NULLs in a
+  // unique index, so only the automatic ones are deduplicated per campaign.
+  autoKind         String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 
   @@index([campaignId])
+  @@unique([campaignId, autoKind])
 }
 
 // Global key/value app settings (e.g. third-party API credentials).

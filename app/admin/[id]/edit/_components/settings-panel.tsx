@@ -188,6 +188,20 @@ export function SettingsPanel({ draft, onConfig, onPatch }: Props) {
         </CompactField>
       </Section>
 
+      <Section title="קישור לוובינר" icon={<Mail className="size-4" />}>
+        <CompactField
+          label="קישור כניסה (Zoom / Meet)"
+          hint="נשלח רק במייל לנרשמים, ולעולם לא מוצג בדף. ברגע שיש קישור, נקבעות אוטומטית תזכורות 24 שעות ושעה לפני."
+        >
+          <CompactInput
+            dir="ltr"
+            value={draft.webinarJoinUrl}
+            placeholder="https://zoom.us/j/..."
+            onChange={(v) => onPatch("webinarJoinUrl", v)}
+          />
+        </CompactField>
+      </Section>
+
       <Section title="לידים & Webhook" icon={<Settings className="size-4" />}>
         <CompactField label="Webhook URL" hint="הריק = משתמש ב-LEADS_WEBHOOK_URL הגלובלי">
           <CompactInput

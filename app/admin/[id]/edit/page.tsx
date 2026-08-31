@@ -31,6 +31,7 @@ export default async function EditCampaignPage({
         templateId: campaign.templateId,
         published: campaign.published,
         leadsWebhookUrl: campaign.leadsWebhookUrl ?? "",
+        webinarJoinUrl: campaign.webinarJoinUrl ?? "",
         config: parsed.data,
       }}
     />

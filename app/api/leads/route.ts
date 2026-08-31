@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma, isConnectionError } from "@/lib/db";
 import { getFallbackCampaign } from "@/lib/campaign-source";
 import { getSendmsgConfig } from "@/lib/app-settings";
+import { sendConfirmationEmail } from "@/lib/auto-emails";
 import { addUserToList } from "@/lib/sendmsg";
 import { ensureCampaignList, logSendmsg } from "@/lib/sendmsg-campaign";
 
@@ -70,6 +71,7 @@ export async function POST(request: Request) {
     name: string;
     leadsWebhookUrl: string | null;
     config: string;
+    webinarJoinUrl: string | null;
   } | null;
   // The database can be unreachable (Neon suspends/disables its compute). A
   // registration must not be lost over that, so both the lookup and the insert
@@ -79,7 +81,7 @@ export async function POST(request: Request) {
     try {
       campaign = await prisma.campaign.findUnique({
         where: { slug: campaignSlug },
-        select: { id: true, slug: true, name: true, leadsWebhookUrl: true, config: true },
+        select: { id: true, slug: true, name: true, leadsWebhookUrl: true, config: true, webinarJoinUrl: true },
       });
     } catch (e) {
       if (!isConnectionError(e)) throw e;
@@ -87,7 +89,15 @@ export async function POST(request: Request) {
       console.error(`[leads] database unreachable while reading "${campaignSlug}"`, e);
       const snapshot = getFallbackCampaign(campaignSlug);
       campaign = snapshot
-        ? { id: snapshot.id, slug: snapshot.slug, name: snapshot.name, leadsWebhookUrl: null, config: snapshot.config }
+        ? {
+            id: snapshot.id,
+            slug: snapshot.slug,
+            name: snapshot.name,
+            leadsWebhookUrl: null,
+            config: snapshot.config,
+            // The join link lives only in the database, never in the snapshot.
+            webinarJoinUrl: null,
+          }
         : null;
     }
   }
@@ -161,6 +171,14 @@ export async function POST(request: Request) {
       phone: cleanPhone,
       email: cleanEmail,
     }).catch((err) => console.error("[leads] sendmsg sync error:", err));
+  }
+
+  // Confirmation mail. Goes out even when the database is unreachable — it
+  // needs nothing from it — so a registrant still gets an acknowledgement.
+  if (campaign) {
+    sendConfirmationEmail(campaign, { name: cleanName, email: cleanEmail }).catch((err) =>
+      console.error("[leads] confirmation error:", err),
+    );
   }
 
   return NextResponse.json({ ok: true });

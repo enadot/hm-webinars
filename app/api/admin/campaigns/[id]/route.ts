@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { CampaignConfigSchema } from "@/lib/campaign-schema";
 import { getTemplate } from "@/lib/templates";
 import { revalidateCampaigns } from "@/lib/campaign-source";
+import { syncAutoReminders } from "@/lib/auto-emails";
 import { verifySessionCookie, SESSION_COOKIE } from "@/lib/auth";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -15,6 +16,7 @@ const UpdateSchema = z.object({
   templateId: z.string().min(1),
   published: z.boolean(),
   leadsWebhookUrl: z.string().default(""),
+  webinarJoinUrl: z.string().default(""),
   config: CampaignConfigSchema,
 });
 
@@ -76,13 +78,23 @@ export async function PATCH(
       templateId: data.templateId,
       published: data.published,
       leadsWebhookUrl: data.leadsWebhookUrl || null,
+      webinarJoinUrl: data.webinarJoinUrl.trim() || null,
       config: JSON.stringify(data.config),
     },
   });
 
   // Both slugs: the campaign may have just been renamed.
   await revalidateCampaigns(existing.slug, data.slug);
-  return NextResponse.json({ ok: true });
+
+  // Reminders follow the join link and the date, so re-evaluate them on every
+  // save. A mail problem must never fail the save itself.
+  let reminders = null;
+  try {
+    reminders = await syncAutoReminders(id);
+  } catch (e) {
+    console.error("[campaigns] reminder sync failed:", e);
+  }
+  return NextResponse.json({ ok: true, reminders });
 }
 
 export async function DELETE(
