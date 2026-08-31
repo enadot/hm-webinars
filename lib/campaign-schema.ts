@@ -171,6 +171,8 @@ export const StepChangeSchema = z.object({
   topbarCta: scText(),
   brandChip: scText(),
   brandChipStrong: scText(),
+  // Partner mark shown after "בשיתוף". Falls back to brandChipStrong as text.
+  partnerLogoUrl: scText(),
   heroChips: z.array(z.string()).default([]),
   heroCtaNote: scText(),
   // Questions cycled through the hero's animated search bar.

@@ -36,15 +36,28 @@ export function ScHero({ config }: { config: CampaignConfig }) {
               <span aria-hidden className="w-px h-5 bg-white/[0.18]" />
               <span className="inline-flex items-center gap-2 text-sm text-[#9CAFA5]">
                 <span aria-hidden className="size-[9px] rounded-full bg-[#74DF93] shrink-0" />
-                <span>
-                  <EditableText path="stepChange.brandChip" as="span" placeholder="שם השותף" />{" "}
-                  <EditableText
-                    path="stepChange.brandChipStrong"
-                    as="b"
-                    className="text-[#EFEFEF]"
-                    placeholder="הדגשה"
-                    hideIfEmpty
-                  />
+                <span className="inline-flex items-center gap-2">
+                  <EditableText path="stepChange.brandChip" as="span" placeholder="בשיתוף" />
+                  {/* The partner supplies its own mark; until one is set the
+                      name stands in as text so the credit is never missing. */}
+                  {sc?.partnerLogoUrl ? (
+                    <EditableImage
+                      path="stepChange.partnerLogoUrl"
+                      alt={sc?.brandChipStrong || "לוגו שותף"}
+                      className="h-4 sm:h-5 w-auto object-contain block"
+                      placeholderClassName="h-5 w-24"
+                      placeholderLabel="לוגו שותף"
+                      hideIfEmpty={false}
+                    />
+                  ) : (
+                    <EditableText
+                      path="stepChange.brandChipStrong"
+                      as="b"
+                      className="text-[#EFEFEF]"
+                      placeholder="שם השותף"
+                      hideIfEmpty
+                    />
+                  )}
                 </span>
               </span>
             </>
@@ -80,6 +93,18 @@ export function ScHero({ config }: { config: CampaignConfig }) {
           />
         </h1>
 
+        {/* Date and time sit above the ask: the visitor decides whether they
+            can even make it before being asked to register. */}
+        {chips.length > 0 && (
+          <ul className="list-none m-0 p-0 flex flex-wrap justify-center gap-x-3.5 gap-y-2.5 font-tae text-[clamp(12.5px,1.3vw,14.5px)] text-[#9CAFA5]">
+            {chips.map((_, i) => (
+              <li key={i} className="border border-white/[0.16] rounded-full px-[18px] py-[9px]">
+                <EditableText path={`stepChange.heroChips.${i}`} as="span" placeholder="פרט" />
+              </li>
+            ))}
+          </ul>
+        )}
+
         <div className="flex flex-col items-center gap-2.5">
           <a
             href="#register"
@@ -96,16 +121,6 @@ export function ScHero({ config }: { config: CampaignConfig }) {
             hideIfEmpty
           />
         </div>
-
-        {chips.length > 0 && (
-          <ul className="list-none m-0 p-0 flex flex-wrap justify-center gap-x-3.5 gap-y-2.5 font-tae text-[clamp(12.5px,1.3vw,14.5px)] text-[#9CAFA5]">
-            {chips.map((_, i) => (
-              <li key={i} className="border border-white/[0.16] rounded-full px-[18px] py-[9px]">
-                <EditableText path={`stepChange.heroChips.${i}`} as="span" placeholder="פרט" />
-              </li>
-            ))}
-          </ul>
-        )}
 
         <EditableText
           path="hero.description"

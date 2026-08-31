@@ -362,8 +362,9 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
     },
     stepChange: {
       topbarCta: "הצטרפות",
-      brandChip: "אלטשולר שחם",
-      brandChipStrong: "טרייד",
+      brandChip: "בשיתוף",
+      brandChipStrong: "אלטשולר שחם טרייד",
+      partnerLogoUrl: "",
       heroChips: ["מוצ\"ש, 29/8", "22:00", "75 דקות", "בזום", "ללא עלות"],
       heroCtaNote: "ההרשמה אורכת פחות מדקה · ללא עלות · מספר המקומות מוגבל",
       typingQuestions: [
@@ -484,8 +485,8 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
           { bad: "לחץ לפתוח חשבון היום", good: "זמן לשאול שאלות" },
         ],
       },
-      speakersEyebrow: "מי עומד מאחורי המפגש",
-      speakersTitle: "פאנל המומחים",
+      speakersEyebrow: "מי מעביר את המפגש",
+      speakersTitle: "שלושה אנשים, תפקיד אחד: שתבינו.",
       speakerCards: [
         {
           badge: "20+",
