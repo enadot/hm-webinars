@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma, isConnectionError } from "@/lib/db";
 import { getFallbackCampaign } from "@/lib/campaign-source";
 import { getSendmsgConfig } from "@/lib/app-settings";
-import { sendConfirmationEmail } from "@/lib/auto-emails";
+import { scheduleAndStoreReminders, sendConfirmationEmail } from "@/lib/auto-emails";
 import { addUserToList } from "@/lib/sendmsg";
 import { ensureCampaignList, logSendmsg } from "@/lib/sendmsg-campaign";
 
@@ -103,9 +103,10 @@ export async function POST(request: Request) {
   }
 
   // Persist lead (only if we have a campaign)
+  let createdLead: { id: string } | null = null;
   if (campaign && dbReachable) {
     try {
-      await prisma.lead.create({
+      createdLead = await prisma.lead.create({
         data: {
           campaignId: campaign.id,
           name: cleanName,
@@ -179,6 +180,14 @@ export async function POST(request: Request) {
     sendConfirmationEmail(campaign, { name: cleanName, email: cleanEmail }).catch((err) =>
       console.error("[leads] confirmation error:", err),
     );
+
+    // Reminders are queued now, one scheduled delivery per registrant, so
+    // someone who signs up shortly before the webinar still gets the late one.
+    if (createdLead) {
+      scheduleAndStoreReminders(campaign, { id: createdLead.id, email: cleanEmail }).catch((err) =>
+        console.error("[leads] reminder scheduling error:", err),
+      );
+    }
   }
 
   return NextResponse.json({ ok: true });

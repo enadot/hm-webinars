@@ -1,8 +1,12 @@
 import { prisma } from "@/lib/db";
-import { getSendmsgConfig, getSendmsgDefaultSender } from "@/lib/app-settings";
-import { dispatchMessageToList } from "@/lib/sendmsg";
-import { ensureCampaignList, logSendmsg } from "@/lib/sendmsg-campaign";
-import { getResendApiKey, getResendFrom, sendTransactionalEmail } from "@/lib/resend";
+import { getSendmsgDefaultSender } from "@/lib/app-settings";
+import {
+  cancelScheduledEmail,
+  getResendApiKey,
+  getResendFrom,
+  sendTransactionalEmail,
+} from "@/lib/resend";
+import type { CampaignConfig } from "@/lib/campaign-schema";
 import {
   type AutoKind,
   type CampaignRow,
@@ -16,8 +20,21 @@ import {
 export type { AutoKind } from "@/lib/auto-email-content";
 export { israelLocalLiteral, buildConfirmationEmail, buildReminderEmail } from "@/lib/auto-email-content";
 
-/** A scheduled send must be far enough out that sendmsg can still act on it. */
-const MIN_LEAD_MINUTES = 10;
+
+/**
+ * The From address. RESEND_FROM wins; the שלח מסר default sender is the
+ * fallback, and it lives in the database — so this must tolerate the database
+ * being unreachable, or a confirmation would be lost to an unrelated outage.
+ */
+async function senderAddress(): Promise<string | null> {
+  let sender: { email: string | null; name: string | null } | null = null;
+  try {
+    sender = await getSendmsgDefaultSender();
+  } catch {
+    // Fall back to RESEND_FROM alone.
+  }
+  return getResendFrom(sender?.name ?? undefined, sender?.email ?? undefined);
+}
 
 /**
  * Confirmation mail for one registrant. Never throws — a mail problem must not
@@ -30,13 +47,7 @@ export async function sendConfirmationEmail(
   const apiKey = getResendApiKey();
   if (!apiKey) return; // transactional mail not configured
 
-  let sender: { email: string | null; name: string | null } | null = null;
-  try {
-    sender = await getSendmsgDefaultSender();
-  } catch {
-    // Settings live in the database; fall back to RESEND_FROM alone.
-  }
-  const from = getResendFrom(sender?.name ?? undefined, sender?.email ?? undefined);
+  const from = await senderAddress();
   if (!from) {
     console.warn("[auto-emails] no RESEND_FROM and no default sender — skipping confirmation");
     return;
@@ -57,151 +68,177 @@ export async function sendConfirmationEmail(
   }
 }
 
-// ---------- Reminders (sendmsg, broadcast to the campaign list) ----------
+// ---------- Reminders (Resend, scheduled per registrant) ----------
+
+/**
+ * Reminders are scheduled the moment someone registers, one Resend delivery
+ * per person with `scheduledAt`.
+ *
+ * The earlier design queued a broadcast to the שלח מסר list instead. Handing
+ * each registrant their own scheduled mail is better in three ways: someone
+ * who signs up an hour before the webinar still gets the one-hour reminder,
+ * nothing depends on שלח מסר credentials, and Resend can cancel a scheduled
+ * mail — so moving the webinar no longer leaves a reminder that cannot be
+ * recalled.
+ *
+ * They only ever go out once a join link exists, as the client asked: a
+ * reminder whose whole job is to hand over the link is worse than none.
+ */
+
+/** A reminder must be far enough out that scheduling it still means something. */
+const MIN_LEAD_MINUTES = 5;
+
+function reminderTimes(startsAt: Date): { kind: AutoKind; at: Date }[] {
+  const cutoff = Date.now() + MIN_LEAD_MINUTES * 60 * 1000;
+  return REMINDERS.map(({ kind, hoursBefore }) => ({
+    kind,
+    at: new Date(startsAt.getTime() - hoursBefore * 60 * 60 * 1000),
+  })).filter((r) => r.at.getTime() > cutoff);
+}
+
+/** The webinar's start, or null when it is unset, unparseable or already past. */
+function upcomingStart(cfg: CampaignConfig | null): Date | null {
+  const startsAt = new Date(cfg?.webinar?.dateISO || "");
+  if (Number.isNaN(startsAt.getTime())) return null;
+  return startsAt.getTime() > Date.now() ? startsAt : null;
+}
+
+/**
+ * Schedules this registrant's reminders. Returns the Resend ids, or an empty
+ * array when there is nothing to schedule — no join link, no future date, or
+ * transactional mail unconfigured. Never throws.
+ */
+export async function scheduleRemindersForLead(
+  campaign: CampaignRow,
+  lead: { email: string },
+): Promise<string[]> {
+  const apiKey = getResendApiKey();
+  const joinUrl = (campaign.webinarJoinUrl || "").trim();
+  if (!apiKey || !joinUrl) return [];
+
+  const cfg = parseConfig(campaign);
+  const startsAt = upcomingStart(cfg);
+  if (!startsAt) return [];
+
+  const from = await senderAddress();
+  if (!from) return [];
+
+  const ids: string[] = [];
+  for (const { kind, at } of reminderTimes(startsAt)) {
+    try {
+      const { subject, html } = buildReminderEmail(kind, campaign, cfg, joinUrl);
+      const { id } = await sendTransactionalEmail(apiKey, {
+        to: lead.email,
+        from,
+        subject,
+        html,
+        scheduledAt: at.toISOString(),
+      });
+      if (id) ids.push(id);
+      console.log(`[auto-emails] ${kind} queued for ${lead.email} at ${at.toISOString()}`);
+    } catch (e) {
+      console.error(`[auto-emails] could not schedule ${kind} for ${lead.email}:`, e);
+    }
+  }
+  return ids;
+}
+
+/** Schedules a lead's reminders and records the ids against them. */
+export async function scheduleAndStoreReminders(
+  campaign: CampaignRow,
+  lead: { id: string; email: string },
+): Promise<void> {
+  const ids = await scheduleRemindersForLead(campaign, lead);
+  if (ids.length === 0) return;
+  try {
+    await prisma.lead.update({
+      where: { id: lead.id },
+      data: { reminderEmailIds: JSON.stringify(ids) },
+    });
+  } catch (e) {
+    // The mail is already queued; losing the ids only costs us cancellation.
+    console.error("[auto-emails] could not store reminder ids:", e);
+  }
+}
 
 export type ReminderSyncResult = {
-  scheduled: AutoKind[];
-  skipped: { kind: AutoKind; reason: string }[];
+  scheduled: number;
+  alreadyScheduled: number;
   note?: string;
 };
 
 /**
- * Schedules the automatic reminders for a campaign, and is safe to call on
- * every admin save.
+ * Backfills reminders for people who registered before the join link existed,
+ * and is safe to call on every admin save.
  *
- * Reminders only ever go out once a join link exists — a reminder whose whole
- * job is to hand over the link is worse than no reminder at all. The send is a
- * scheduled broadcast to the campaign's שלח מסר list, so registrations that
- * arrive after scheduling are still covered.
- *
- * Each reminder is dispatched once. sendmsg has no recall endpoint here, so if
- * the date or link changes after a reminder was handed over, this records the
- * conflict instead of quietly queueing a second copy of it.
+ * Leads that already carry reminder ids are left alone, so re-saving a
+ * campaign never queues a second copy. When the link is removed, any reminder
+ * still pending is cancelled at Resend rather than left to arrive.
  */
 export async function syncAutoReminders(campaignId: string): Promise<ReminderSyncResult> {
-  const result: ReminderSyncResult = { scheduled: [], skipped: [] };
+  const apiKey = getResendApiKey();
+  if (!apiKey) return { scheduled: 0, alreadyScheduled: 0, note: "Resend לא מוגדר — לא נקבעו תזכורות" };
 
   const campaign = await prisma.campaign.findUnique({
     where: { id: campaignId },
     select: { id: true, slug: true, name: true, config: true, webinarJoinUrl: true },
   });
-  if (!campaign) return { ...result, note: "campaign not found" };
+  if (!campaign) return { scheduled: 0, alreadyScheduled: 0, note: "campaign not found" };
 
   const joinUrl = (campaign.webinarJoinUrl || "").trim();
+  const leads = await prisma.lead.findMany({
+    where: { campaignId },
+    select: { id: true, email: true, reminderEmailIds: true },
+  });
+
   if (!joinUrl) {
-    // Nothing has been handed to sendmsg yet for un-dispatched reminders, so
-    // clear them; anything already dispatched is left alone and reported.
-    const removed = await prisma.emailTemplate.deleteMany({
-      where: { campaignId, autoKind: { not: null }, status: { in: ["draft", "failed"] } },
-    });
+    let cancelled = 0;
+    for (const lead of leads.filter((l) => l.reminderEmailIds)) {
+      for (const id of safeIds(lead.reminderEmailIds)) {
+        if (await cancelScheduledEmail(apiKey, id)) cancelled++;
+      }
+      await prisma.lead.update({ where: { id: lead.id }, data: { reminderEmailIds: null } });
+    }
     return {
-      ...result,
-      note:
-        removed.count > 0
-          ? "אין קישור לוובינר — התזכורות האוטומטיות הוסרו"
-          : "אין קישור לוובינר — לא נקבעו תזכורות אוטומטיות",
+      scheduled: 0,
+      alreadyScheduled: 0,
+      note: cancelled
+        ? `אין קישור לוובינר — ${cancelled} תזכורות ממתינות בוטלו`
+        : "אין קישור לוובינר — לא נקבעו תזכורות אוטומטיות",
     };
   }
 
-  const cfg = parseConfig(campaign);
-  const startsAt = new Date(cfg?.webinar?.dateISO || "");
-  if (Number.isNaN(startsAt.getTime())) {
-    return { ...result, note: "לא הוגדר תאריך לוובינר — לא נקבעו תזכורות" };
+  if (!upcomingStart(parseConfig(campaign))) {
+    return { scheduled: 0, alreadyScheduled: 0, note: "אין תאריך עתידי לוובינר — לא נקבעו תזכורות" };
   }
 
-  const creds = await getSendmsgConfig();
-  if (!creds) return { ...result, note: "שלח מסר לא מוגדר — לא נקבעו תזכורות" };
-
-  const sender = await getSendmsgDefaultSender();
-  const now = Date.now();
-
-  for (const { kind, hoursBefore, label } of REMINDERS) {
-    const sendAt = new Date(startsAt.getTime() - hoursBefore * 60 * 60 * 1000);
-    if (sendAt.getTime() < now + MIN_LEAD_MINUTES * 60 * 1000) {
-      result.skipped.push({ kind, reason: "המועד כבר עבר" });
+  let scheduled = 0;
+  let alreadyScheduled = 0;
+  for (const lead of leads) {
+    if (lead.reminderEmailIds) {
+      alreadyScheduled++;
       continue;
     }
-    const scheduledAt = israelLocalLiteral(sendAt);
-    const existing = await prisma.emailTemplate.findUnique({
-      where: { campaignId_autoKind: { campaignId, autoKind: kind } },
+    const before = scheduled;
+    await scheduleAndStoreReminders(campaign, lead);
+    const updated = await prisma.lead.findUnique({
+      where: { id: lead.id },
+      select: { reminderEmailIds: true },
     });
-
-    if (existing && (existing.status === "sent" || existing.status === "scheduled")) {
-      if (existing.scheduledAt === scheduledAt) {
-        result.skipped.push({ kind, reason: "כבר מתוזמנת" });
-      } else {
-        await prisma.emailTemplate.update({
-          where: { id: existing.id },
-          data: {
-            errorMessage:
-              `התזכורת כבר נמסרה לשלח מסר ל-${existing.scheduledAt}, ` +
-              `והמועד החדש הוא ${scheduledAt}. אין ביטול דרך ה-API — ` +
-              `בטלו את ההודעה בממשק שלח מסר וקבעו מחדש.`,
-          },
-        });
-        result.skipped.push({ kind, reason: "נמסרה כבר במועד אחר — נדרש טיפול ידני" });
-      }
-      continue;
-    }
-
-    const { subject, html } = buildReminderEmail(kind, campaign, cfg, joinUrl);
-    const row = await prisma.emailTemplate.upsert({
-      where: { campaignId_autoKind: { campaignId, autoKind: kind } },
-      create: {
-        campaignId,
-        autoKind: kind,
-        name: label,
-        subject,
-        html,
-        senderEmail: sender?.email || null,
-        senderName: sender?.name || null,
-        scheduledAt,
-        status: "draft",
-      },
-      update: {
-        name: label,
-        subject,
-        html,
-        senderEmail: sender?.email || null,
-        senderName: sender?.name || null,
-        scheduledAt,
-        status: "draft",
-        errorMessage: null,
-      },
-    });
-
-    try {
-      const listId = await ensureCampaignList(creds, campaign);
-      if (!listId) {
-        result.skipped.push({ kind, reason: "לא נוצרה רשימת תפוצה" });
-        continue;
-      }
-      const { messageId } = await dispatchMessageToList(
-        creds,
-        listId,
-        {
-          subject,
-          content: html,
-          innerName: `${campaign.slug} · ${label}`,
-          senderEmail: sender?.email ?? undefined,
-          senderName: sender?.name ?? undefined,
-        },
-        { scheduledAtLocal: scheduledAt },
-      );
-      await prisma.emailTemplate.update({
-        where: { id: row.id },
-        data: { status: "scheduled", sendmsgMessageId: messageId ?? undefined },
-      });
-      result.scheduled.push(kind);
-    } catch (e) {
-      logSendmsg(`schedule ${kind}`, e);
-      await prisma.emailTemplate.update({
-        where: { id: row.id },
-        data: { status: "failed", errorMessage: e instanceof Error ? e.message : String(e) },
-      });
-      result.skipped.push({ kind, reason: "שגיאה בשליחה לשלח מסר" });
+    if (updated?.reminderEmailIds) scheduled++;
+    if (scheduled === before && !updated?.reminderEmailIds) {
+      // Nothing queued for this lead (all reminder times already passed).
     }
   }
+  return { scheduled, alreadyScheduled };
+}
 
-  return result;
+function safeIds(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === "string") : [];
+  } catch {
+    return [];
+  }
 }

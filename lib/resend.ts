@@ -33,6 +33,8 @@ export type ResendEmail = {
   html: string;
   from: string;
   replyTo?: string;
+  /** ISO instant to deliver at. Resend holds the mail until then. */
+  scheduledAt?: string;
 };
 
 /** Sends one email. Throws on a Resend-reported error so callers can log it. */
@@ -48,9 +50,36 @@ export async function sendTransactionalEmail(
     subject: email.subject,
     html: email.html,
     ...(email.replyTo ? { replyTo: email.replyTo } : {}),
+    ...(email.scheduledAt ? { scheduledAt: email.scheduledAt } : {}),
   });
   if (error) {
     throw new Error(`${error.name ?? "resend error"}: ${error.message ?? "unknown"}`);
   }
   return { id: data?.id ?? null };
+}
+
+/**
+ * Cancels a scheduled email that has not gone out yet. Used when a webinar
+ * moves and its already-queued reminders would otherwise arrive at the old
+ * time.
+ *
+ * Never throws. Besides a reminder that already went out, Resend answers
+ * "Email is not scheduled" for a short window right after scheduling, while
+ * the record is still `queued` and has not settled into `scheduled` — so a
+ * failure here is not proof the mail will be delivered, and the caller treats
+ * it as advisory rather than fatal.
+ */
+export async function cancelScheduledEmail(apiKey: string, id: string): Promise<boolean> {
+  try {
+    const { Resend } = await import("resend");
+    const { error } = await new Resend(apiKey).emails.cancel(id);
+    if (error) {
+      console.warn(`[resend] could not cancel ${id}: ${error.message ?? "unknown"}`);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.warn(`[resend] cancel ${id} threw:`, e);
+    return false;
+  }
 }

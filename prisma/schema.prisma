@@ -78,6 +78,9 @@ model Lead {
   utmTerm     String?
   userAgent   String?
   createdAt   DateTime @default(now())
+  // Resend ids of the reminders scheduled for this registrant, as a JSON
+  // array. Kept so a reminder can be cancelled if the webinar moves.
+  reminderEmailIds String?
 
   @@index([campaignId])
 }
