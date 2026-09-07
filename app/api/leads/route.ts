@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { prisma, isConnectionError } from "@/lib/db";
 import { getFallbackCampaign } from "@/lib/campaign-source";
 import { getSendmsgConfig } from "@/lib/app-settings";
@@ -177,17 +177,28 @@ export async function POST(request: Request) {
   // Confirmation mail. Goes out even when the database is unreachable — it
   // needs nothing from it — so a registrant still gets an acknowledgement.
   if (campaign) {
-    sendConfirmationEmail(campaign, { name: cleanName, email: cleanEmail }).catch((err) =>
-      console.error("[leads] confirmation error:", err),
-    );
-
-    // Reminders are queued now, one scheduled delivery per registrant, so
-    // someone who signs up shortly before the webinar still gets the late one.
-    if (createdLead) {
-      scheduleAndStoreReminders(campaign, { id: createdLead.id, email: cleanEmail }).catch((err) =>
-        console.error("[leads] reminder scheduling error:", err),
-      );
-    }
+    const mailCampaign = campaign;
+    const leadId = createdLead?.id;
+    // after() rather than a bare floating promise: the visitor should not wait
+    // on Resend, but the serverless function may be frozen the moment the
+    // response is returned, which would silently drop the mail. after() makes
+    // the platform keep the invocation alive until this finishes.
+    after(async () => {
+      try {
+        await sendConfirmationEmail(mailCampaign, { name: cleanName, email: cleanEmail });
+      } catch (err) {
+        console.error("[leads] confirmation error:", err);
+      }
+      // Reminders are queued now, one scheduled delivery per registrant, so
+      // someone who signs up shortly before the webinar still gets the late one.
+      if (leadId) {
+        try {
+          await scheduleAndStoreReminders(mailCampaign, { id: leadId, email: cleanEmail });
+        } catch (err) {
+          console.error("[leads] reminder scheduling error:", err);
+        }
+      }
+    });
   }
 
   return NextResponse.json({ ok: true });
