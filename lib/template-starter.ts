@@ -295,7 +295,7 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
       subheadline: "",
       description:
         "וובינר פתוח למי שיש לו קצת כסף בצד ורוצה סוף סוף להבין מה עושים איתו. בעברית פשוטה, עם ארבע תשובות ברורות:",
-      ctaText: "תשמרו לי מקום בוובינר",
+      ctaText: "להרשמה ללא עלות",
     },
     webinar: {
       ...base.webinar,
@@ -351,9 +351,9 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
       titleAccent: "",
       description: "שלושה פרטים, פחות מדקה, ואתם בפנים.",
       bullets: [],
-      cardTitle: "תשמרו לי מקום בוובינר",
+      cardTitle: "להרשמה ללא עלות",
       cardDescription: "מספר המקומות מוגבל · ההרשמה אינה כרוכה בתשלום · ניתן להסיר בכל עת",
-      buttonText: "תשמרו לי מקום בוובינר",
+      buttonText: "להרשמה ללא עלות",
     },
     footer: {
       phone: "",
@@ -398,7 +398,7 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
         ],
         closing:
           "ההבנה שחסרה לכם נמצאת במרחק 75 דקות.",
-        cta: "תשמרו לי מקום בוובינר",
+        cta: "להרשמה ללא עלות",
         ctaNote: "ללא עלות · ניתן לצאת בכל רגע · מקבלים גם את ההקלטה",
       },
       bridge: {
@@ -575,7 +575,7 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
         body1:
           "בסוף המפגש נפתח שו\"ת חי. כל אחד שואל את מה שבאמת מפריע לו, ומקבל תשובה ישירה ממי שיושב בצד השני של השוק.",
         body2: "אלה השאלות שרק אתם יכולים לשאול, כי הן שלכם.",
-        cta: "תשמרו לי מקום בוובינר",
+        cta: "להרשמה ללא עלות",
         ctaNote: "ההרשמה ללא עלות · ניתן לבטל בקליק",
         items: [
           {
@@ -602,7 +602,7 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
       ctaBand: {
         title: "שעה אחת עכשיו.\nושנה שלמה של החלטות טובות יותר.",
         body: "ההחלטה היחידה שצריך לקבל היום היא להבין על מה מדובר.",
-        cta: "תשמרו לי מקום בוובינר",
+        cta: "להרשמה ללא עלות",
         note: "פחות מדקה להרשמה · ללא עלות · ההקלטה נשלחת לכולם",
       },
       register: {
@@ -649,13 +649,14 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
         title: "צעד קטן. שינוי גדול.",
         titleAccent: "השעה הזאת היא הצעד.",
         mono: "29/8 במוצ\"ש, 22:00, 75 דקות. בזום. ללא עלות.",
-        cta: "תשמרו לי מקום בוובינר",
+        cta: "להרשמה ללא עלות",
+        reassure: "לא צריך להחליט היום מה תעשו עם הכסף. צריך רק להבין על מה מדובר.",
         credit: "וובינר \"צעד קטן, שינוי גדול\" · בהנחיית ישראל בוגרד",
         legal:
           "התוכן במפגש הוא כללי ולימודי בלבד ואינו מהווה ייעוץ השקעות, שיווק השקעות או תחליף לייעוץ אישי המתחשב בנתוניו ובצרכיו של כל אדם. השקעה בשוק ההון כרוכה בסיכון, לרבות אפשרות להפסד חלק מכספי ההשקעה או כולם. אין בתוצאות העבר כדי להעיד על תוצאות העתיד.",
         copyright: "© המחדש 2026",
       },
-      stickyCta: "תשמרו לי מקום בוובינר",
+      stickyCta: "להרשמה ללא עלות",
       stickyNote: "מוצ\"ש 29/8 · 22:00 · ללא עלות",
     },
   };

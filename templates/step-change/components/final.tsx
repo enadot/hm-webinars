@@ -40,6 +40,15 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
           <EditableText path="stepChange.final.cta" as="span" placeholder="טקסט כפתור" />{" "}
           <span aria-hidden>&#8592;</span>
         </a>
+        {/* The client asked to keep this reassurance when the "wait another
+            year" section was cut — it is the one line from it worth saving. */}
+        <EditableText
+          path="stepChange.final.reassure"
+          as="p"
+          className="m-0 text-[clamp(14px,1.4vw,16px)] text-[#9CAFA5] max-w-[46ch]"
+          placeholder="משפט מרגיע"
+          hideIfEmpty
+        />
       </div>
 
       <div className="max-w-[900px] mx-auto mt-16 px-6 pt-7 box-border border-t border-white/10 flex flex-col gap-3.5 text-center">
