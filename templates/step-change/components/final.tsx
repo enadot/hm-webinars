@@ -10,10 +10,10 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
   return (
     <EditableSection
       sectionKey="final"
-      className="bg-[#162321] text-[#EFEFEF] pt-[100px] pb-10 text-center"
+      className="bg-[#162321] text-[#EFEFEF] pt-16 md:pt-[100px] pb-10 text-center"
     >
-      <div className="max-w-[860px] mx-auto px-6 box-border flex flex-col items-center gap-[22px]">
-        <h2 className="m-0 font-black text-[clamp(38px,5.6vw,76px)] leading-[1.06] tracking-[-1.4px] [text-wrap:balance]">
+      <div className="max-w-[860px] mx-auto px-5 md:px-6 box-border flex flex-col items-center gap-4 md:gap-[22px]">
+        <h2 className="m-0 font-black text-[34px] md:text-[clamp(38px,5.6vw,76px)] leading-[1.08] md:leading-[1.06] tracking-[-0.8px] md:tracking-[-1.4px] [text-wrap:balance]">
           <EditableText path="stepChange.final.title" as="span" multiline placeholder="כותרת" />
           {/* The accent line always starts a new line, as in the approved design. */}
           {config.stepChange.final.titleAccent ? <br /> : " "}
@@ -29,13 +29,13 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
         <EditableText
           path="stepChange.final.mono"
           as="div"
-          className="font-tae text-[clamp(14px,1.5vw,17px)] text-[#9CAFA5] tracking-[1px]"
+          className="font-tae text-[13px] md:text-[clamp(14px,1.5vw,17px)] text-[#9CAFA5] tracking-[0.5px] md:tracking-[1px]"
           placeholder="שורת פרטים"
           hideIfEmpty
         />
         <a
           href="#register"
-          className="bg-[#74DF93] hover:bg-[#A1F0B8] transition-colors text-[#162321] font-extrabold text-[clamp(18px,1.7vw,21px)] px-[46px] py-5 rounded-full"
+          className="bg-[#74DF93] hover:bg-[#A1F0B8] transition-colors text-[#162321] font-extrabold text-[clamp(18px,1.7vw,21px)] px-9 py-4 md:px-[46px] md:py-5 rounded-full"
         >
           <EditableText path="stepChange.final.cta" as="span" placeholder="טקסט כפתור" />{" "}
           <span aria-hidden>&#8592;</span>
@@ -51,7 +51,7 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
         />
       </div>
 
-      <div className="max-w-[900px] mx-auto mt-16 px-6 pt-7 box-border border-t border-white/10 flex flex-col gap-3.5 text-center">
+      <div className="max-w-[900px] mx-auto mt-12 md:mt-16 px-5 md:px-6 pt-6 md:pt-7 box-border border-t border-white/10 flex flex-col gap-3 md:gap-3.5 text-center">
         <EditableText
           path="stepChange.final.credit"
           as="div"

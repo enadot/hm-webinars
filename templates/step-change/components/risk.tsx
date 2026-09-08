@@ -10,17 +10,17 @@ export function ScRisk({ config }: { config: CampaignConfig }) {
   return (
     <EditableSection
       sectionKey="risk"
-      className="bg-[#162321] text-[#EFEFEF] py-[104px] border-b border-white/[0.08]"
+      className="bg-[#162321] text-[#EFEFEF] py-16 md:py-[104px] border-b border-white/[0.08]"
     >
-      <div className="max-w-[1160px] mx-auto px-6 box-border grid grid-cols-[repeat(auto-fit,minmax(min(100%,330px),1fr))] gap-12 items-start">
+      <div className="max-w-[1160px] mx-auto px-5 md:px-6 box-border grid grid-cols-[repeat(auto-fit,minmax(min(100%,330px),1fr))] gap-8 md:gap-12 items-start">
         <div>
           <EditableText
             path="stepChange.risk.eyebrow"
             as="div"
-            className="font-tae text-[clamp(13px,1.3vw,15px)] tracking-[2.5px] text-[#9CAFA5] mb-5"
+            className="font-tae text-[12px] md:text-[clamp(13px,1.3vw,15px)] tracking-[1.5px] md:tracking-[2.5px] text-[#9CAFA5] mb-4 md:mb-5"
             placeholder="שורת פתיחה"
           />
-          <h2 className="m-0 mb-[26px] font-black text-[clamp(32px,4.4vw,58px)] leading-[1.1] tracking-[-1.1px] [text-wrap:balance]">
+          <h2 className="m-0 mb-5 md:mb-[26px] font-black text-[30px] md:text-[clamp(32px,4.4vw,58px)] leading-[1.12] md:leading-[1.1] tracking-[-0.8px] md:tracking-[-1.1px] [text-wrap:balance]">
             <EditableText
               path="stepChange.risk.titleAccent"
               as="span"
@@ -56,7 +56,7 @@ export function ScRisk({ config }: { config: CampaignConfig }) {
         </div>
 
         {rows.length > 0 && (
-          <div className="bg-[#273533] border border-white/[0.12] rounded-[22px] px-[26px] py-[30px] shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
+          <div className="bg-[#273533] border border-white/[0.12] rounded-[22px] px-4 py-5 md:px-[26px] md:py-[30px] shadow-[0_24px_60px_rgba(0,0,0,0.45)]">
             <table className="w-full border-collapse text-right">
               <thead>
                 <tr>
@@ -65,7 +65,7 @@ export function ScRisk({ config }: { config: CampaignConfig }) {
                   </th>
                   <th
                     scope="col"
-                    className="text-sm font-bold text-[#74DF93] pb-3.5 pr-[18px] border-b border-white/[0.12] border-r border-r-white/[0.12]"
+                    className="text-sm font-bold text-[#74DF93] pb-3.5 pr-3 md:pr-[18px] border-b border-white/[0.12] border-r border-r-white/[0.12]"
                   >
                     <EditableText path="stepChange.risk.goodHead" as="span" placeholder="מה כן תקבלו" />
                   </th>
@@ -75,14 +75,14 @@ export function ScRisk({ config }: { config: CampaignConfig }) {
                 {rows.map((_, i) => (
                   <tr key={i}>
                     <td
-                      className={`py-[18px] text-[clamp(15px,1.6vw,17.5px)] text-[#9CAFA5] line-through decoration-white/30 ${
+                      className={`py-3.5 md:py-[18px] pl-2 md:pl-0 text-[15px] md:text-[clamp(15px,1.6vw,17.5px)] text-[#9CAFA5] line-through decoration-white/30 ${
                         i > 0 ? "border-t border-white/[0.08]" : ""
                       }`}
                     >
                       <EditableText path={`stepChange.risk.rows.${i}.bad`} as="span" placeholder="—" />
                     </td>
                     <td
-                      className={`p-[18px] text-[clamp(15px,1.6vw,17.5px)] font-bold text-[#EFEFEF] border-r border-white/[0.12] ${
+                      className={`py-3.5 pr-3 md:p-[18px] text-[15px] md:text-[clamp(15px,1.6vw,17.5px)] font-bold text-[#EFEFEF] border-r border-white/[0.12] ${
                         i > 0 ? "border-t border-t-white/[0.08]" : ""
                       }`}
                     >

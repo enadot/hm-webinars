@@ -139,7 +139,7 @@ export function ScLeadForm({ slug }: { slug?: string }) {
           checked={agree}
           onChange={(e) => setAgree(e.target.checked)}
           disabled={editing}
-          className="size-5 accent-[#74DF93] shrink-0 m-0"
+          className="size-6 accent-[#74DF93] shrink-0 m-0"
         />
         <span>אני מאשר/ת קבלת עדכונים על המפגש והקלטתו.</span>
       </label>

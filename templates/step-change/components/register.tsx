@@ -11,31 +11,31 @@ export function ScRegister({ config, slug }: { config: CampaignConfig; slug?: st
     <EditableSection
       sectionKey="register"
       id="register"
-      className="bg-[#162321] text-[#EFEFEF] py-[100px] scroll-mt-5"
+      className="bg-[#162321] text-[#EFEFEF] py-16 md:py-[100px] scroll-mt-5"
     >
-      <div className="max-w-[1160px] mx-auto px-6 box-border grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-12 items-start">
+      <div className="max-w-[1160px] mx-auto px-5 md:px-6 box-border grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] gap-8 md:gap-12 items-start">
         <div>
           <EditableText
             path="stepChange.register.eyebrow"
             as="div"
-            className="font-tae text-[clamp(13px,1.3vw,15px)] tracking-[2.5px] text-[#9CAFA5] mb-5"
+            className="font-tae text-[12px] md:text-[clamp(13px,1.3vw,15px)] tracking-[1.5px] md:tracking-[2.5px] text-[#9CAFA5] mb-4 md:mb-5"
             placeholder="שורת פתיחה"
           />
           <EditableText
             path="stepChange.register.title"
             as="h2"
-            className="m-0 mb-3.5 font-black text-[clamp(38px,5.4vw,72px)] leading-[1.06] tracking-[-1.3px]"
+            className="m-0 mb-3 md:mb-3.5 font-black text-[34px] md:text-[clamp(38px,5.4vw,72px)] leading-[1.08] md:leading-[1.06] tracking-[-0.8px] md:tracking-[-1.3px]"
             placeholder="כותרת"
           />
           <EditableText
             path="stepChange.register.body"
             as="p"
-            className="m-0 mb-8 text-[clamp(17px,1.8vw,21px)] text-[#9CAFA5] leading-[1.6]"
+            className="m-0 mb-6 md:mb-8 text-[17px] md:text-[clamp(17px,1.8vw,21px)] text-[#9CAFA5] leading-[1.6]"
             placeholder="פסקה"
             hideIfEmpty
           />
           {details.length > 0 && (
-            <div className="bg-[#273533] border border-white/[0.12] rounded-[20px] p-[26px] grid grid-cols-[auto_1fr] gap-x-5 gap-y-3.5 text-[clamp(15.5px,1.6vw,17.5px)]">
+            <div className="bg-[#273533] border border-white/[0.12] rounded-[20px] p-5 md:p-[26px] grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 md:gap-x-5 md:gap-y-3.5 text-[15.5px] md:text-[clamp(15.5px,1.6vw,17.5px)]">
               {details.map((_, i) => (
                 <div key={i} className="contents">
                   <EditableText
@@ -56,7 +56,7 @@ export function ScRegister({ config, slug }: { config: CampaignConfig; slug?: st
           )}
         </div>
 
-        <div className="bg-[#273533] border border-white/[0.12] rounded-3xl px-[30px] py-[34px] w-[min(100%,470px)] box-border justify-self-center shadow-[0_24px_60px_rgba(0,0,0,0.5)]">
+        <div className="bg-[#273533] border border-white/[0.12] rounded-3xl px-5 py-6 md:px-[30px] md:py-[34px] w-[min(100%,470px)] box-border justify-self-center shadow-[0_24px_60px_rgba(0,0,0,0.5)]">
           <ScLeadForm slug={slug} />
         </div>
       </div>

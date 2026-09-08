@@ -20,22 +20,22 @@ export function ScAgenda({ config }: { config: CampaignConfig }) {
   const act = modules[Math.min(active, modules.length - 1)];
 
   return (
-    <EditableSection sectionKey="agenda" className="bg-[#EFEFEF] text-[#162321] py-[104px]">
-      <div className="max-w-[1160px] mx-auto px-6 box-border">
+    <EditableSection sectionKey="agenda" className="bg-[#EFEFEF] text-[#162321] py-16 md:py-[104px]">
+      <div className="max-w-[1160px] mx-auto px-5 md:px-6 box-border">
         <EditableText
           path="stepChange.agenda.eyebrow"
           as="div"
-          className="font-tae text-[clamp(13px,1.3vw,15px)] tracking-[2.5px] text-[#5A6E64] mb-5"
+          className="font-tae text-[12px] md:text-[clamp(13px,1.3vw,15px)] tracking-[1.5px] md:tracking-[2.5px] text-[#5A6E64] mb-4 md:mb-5"
           placeholder="שורת פתיחה"
         />
         <EditableText
           path="stepChange.agenda.title"
           as="h2"
           multiline
-          className="m-0 mb-[18px] font-black text-[clamp(36px,5.6vw,76px)] leading-[1.07] tracking-[-1.4px] max-w-[18ch] [text-wrap:balance]"
+          className="m-0 mb-[18px] font-black text-[32px] md:text-[clamp(36px,5.6vw,76px)] leading-[1.1] md:leading-[1.07] tracking-[-0.8px] md:tracking-[-1.4px] max-w-[18ch] [text-wrap:balance]"
           placeholder="כותרת"
         />
-        <ScSquiggle className="w-[min(52%,300px)] mb-11" stroke="#162321" width={5} />
+        <ScSquiggle className="w-[min(52%,300px)] mb-8 md:mb-11" stroke="#162321" width={5} />
 
         {/* Desktop: list + sticky detail card */}
         <div className="hidden lg:grid grid-cols-[0.85fr_1.15fr] gap-5 items-start">
@@ -116,14 +116,14 @@ export function ScAgenda({ config }: { config: CampaignConfig }) {
                   type="button"
                   onClick={() => setOpen(on ? -1 : i)}
                   aria-expanded={on}
-                  className="w-full bg-transparent border-0 cursor-pointer text-right p-[18px] flex items-start gap-3 min-h-14 font-tamo text-[#162321]"
+                  className="w-full bg-transparent border-0 cursor-pointer text-right p-4 flex items-start gap-3 min-h-14 font-tamo text-[#162321]"
                 >
                   <span aria-hidden className="font-tae text-[17px] font-semibold text-[#487854] shrink-0 pt-0.5">
                     {m.n}
                   </span>
                   <span className="flex-1">
-                    <span className="block font-extrabold text-[19px] leading-[1.35]">{m.title}</span>
-                    <span className="block font-semibold text-base leading-[1.5] text-[#4A5C54] mt-1.5">
+                    <span className="block font-extrabold text-[18px] leading-[1.35]">{m.title}</span>
+                    <span className="block font-semibold text-[15px] leading-[1.5] text-[#4A5C54] mt-1">
                       {m.promise}
                     </span>
                   </span>
@@ -132,7 +132,7 @@ export function ScAgenda({ config }: { config: CampaignConfig }) {
                   </span>
                 </button>
                 {on && (
-                  <div className="px-[18px] pb-[18px] text-[#4A5C54] text-[16.5px] leading-[1.7]">
+                  <div className="px-4 pb-4 text-[#4A5C54] text-[16px] leading-[1.7]">
                     {m.detail}
                   </div>
                 )}
@@ -149,15 +149,17 @@ export function ScAgenda({ config }: { config: CampaignConfig }) {
           hideIfEmpty
         />
 
-        <div className="flex flex-wrap items-center gap-5 mt-11 pt-[34px] border-t border-[#D3DCD7]">
+        <div className="flex flex-wrap items-center gap-5 mt-8 pt-7 md:mt-11 md:pt-[34px] border-t border-[#D3DCD7]">
           <EditableText
             path="stepChange.agenda.closing"
             as="span"
             multiline
-            className="font-extrabold text-[clamp(19px,2.1vw,26px)] max-w-[32ch] leading-[1.4]"
+            className="font-extrabold text-[19px] md:text-[clamp(19px,2.1vw,26px)] max-w-[32ch] leading-[1.4]"
             placeholder="משפט סיכום"
           />
-          <div className="flex flex-col gap-2.5">
+          {/* On phones the sticky bar already carries the ask, so this second
+              button is desktop-only; the closing line stays. */}
+          <div className="hidden md:flex flex-col gap-2.5">
             <a
               href="#register"
               className="bg-[#162321] hover:bg-[#0C1513] hover:text-[#74DF93] transition-colors text-[#EFEFEF] font-extrabold text-[17px] px-8 py-[17px] rounded-full text-center"
