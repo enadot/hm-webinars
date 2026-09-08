@@ -33,9 +33,10 @@ export function ScFinal({ config }: { config: CampaignConfig }) {
           placeholder="שורת פרטים"
           hideIfEmpty
         />
+        {/* Desktop only — on phones the fixed bottom bar is this button. */}
         <a
           href="#register"
-          className="bg-[#74DF93] hover:bg-[#A1F0B8] transition-colors text-[#162321] font-extrabold text-[clamp(18px,1.7vw,21px)] px-9 py-4 md:px-[46px] md:py-5 rounded-full"
+          className="hidden md:inline-block bg-[#74DF93] hover:bg-[#A1F0B8] transition-colors text-[#162321] font-extrabold text-[clamp(18px,1.7vw,21px)] px-[46px] py-5 rounded-full"
         >
           <EditableText path="stepChange.final.cta" as="span" placeholder="טקסט כפתור" />{" "}
           <span aria-hidden>&#8592;</span>

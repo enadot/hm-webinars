@@ -46,7 +46,7 @@ export function ScHero({ config }: { config: CampaignConfig }) {
                     <EditableImage
                       path="stepChange.partnerLogoUrl"
                       alt={sc?.brandChipStrong || "לוגו שותף"}
-                      className="h-4 md:h-5 w-auto max-w-[150px] md:max-w-none object-contain block"
+                      className="h-[22px] md:h-7 w-auto max-w-[150px] md:max-w-none object-contain block"
                       placeholderClassName="h-5 w-24"
                       placeholderLabel="לוגו שותף"
                       hideIfEmpty={false}
@@ -109,10 +109,12 @@ export function ScHero({ config }: { config: CampaignConfig }) {
           </ul>
         )}
 
+        {/* On phones the fixed bar at the bottom is the one registration
+            button; the note under it (free, limited seats) still shows here. */}
         <div className="flex flex-col items-center gap-2.5">
           <a
             href="#register"
-            className="bg-[#74DF93] hover:bg-[#A1F0B8] transition-colors text-[#162321] font-extrabold text-[clamp(18px,1.7vw,21px)] px-9 py-4 md:px-11 md:py-5 rounded-full inline-flex items-center gap-2.5"
+            className="hidden md:inline-flex bg-[#74DF93] hover:bg-[#A1F0B8] transition-colors text-[#162321] font-extrabold text-[clamp(18px,1.7vw,21px)] px-11 py-5 rounded-full items-center gap-2.5"
           >
             <EditableText path="hero.ctaText" as="span" placeholder="טקסט כפתור" />
             <span aria-hidden>&#8592;</span>

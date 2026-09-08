@@ -364,7 +364,7 @@ function stepChangeStarter(base: CampaignConfig): CampaignConfig {
       topbarCta: "הצטרפות",
       brandChip: "בשיתוף",
       brandChipStrong: "אלטשולר שחם טרייד",
-      partnerLogoUrl: "",
+      partnerLogoUrl: "/logo-altshuler-trade-white.png",
       heroChips: ["מוצ\"ש, 29/8", "22:00", "75 דקות", "בזום", "ללא עלות"],
       heroCtaNote: "ההרשמה אורכת פחות מדקה · ללא עלות · מספר המקומות מוגבל",
       typingQuestions: [
